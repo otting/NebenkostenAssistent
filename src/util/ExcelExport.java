@@ -65,8 +65,6 @@ public class ExcelExport {
 	exl.selectLastSheet();
 	exl.cloneLastSheet();
 	exl.renameSelectedSheet(b.getTenant().getName());
-	if (StatSchieber.firstTenant.equals(""))
-	    StatSchieber.firstTenant = exl.getSheet().getSheetName();
 	exl.replace("*NAME*", b.getTenant().getName());
 	exl.replace("*WOHNUNG*", b.getFlat().toString());
 	exl.replace("*QM*", b.getSquareMeter());

@@ -128,11 +128,11 @@ public class ExcelHandle {
     }
 
     public void save() {
-	try {
-	    HSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
-	} catch (Exception e) {
-	    System.err.println("Error evaluating formulas");
-	}
+	// try {
+	HSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+	// } catch (Exception e) {
+	// System.err.println("Error evaluating formulas");
+	// }
 	FileOutputStream fo;
 	File f = new File(path);
 	if (f.exists()) {
@@ -268,7 +268,6 @@ public class ExcelHandle {
     public static void copyCell(HSSFCell oldCell, HSSFCell newCell, boolean withStyle) {
 	if (oldCell == null)
 	    return;
-
 	if (oldCell.getSheet().getWorkbook() == newCell.getSheet().getWorkbook()) {
 	    newCell.setCellStyle(oldCell.getCellStyle());
 	} else {
@@ -299,10 +298,51 @@ public class ExcelHandle {
 	    } catch (FormulaParseException e) {
 		newCell.setCellValue(oldCell.getErrorCellValue());
 	    }
+	    replaceFormula(oldCell, newCell);
 	    break;
 	default:
 	    break;
 	}
 
+    }
+
+    /**
+     * this function should ONLY be used for cells of Cell Type Formula and in
+     * Range of A to Z
+     */
+    private static void replaceFormula(HSSFCell old, HSSFCell newCell) {
+	String regex = getRegex(old, newCell);
+	char from = regex.charAt(0);
+	char to = (char) (((int) 'A') + newCell.getColumnIndex());
+	int check = 2;
+	String formula = newCell.getCellFormula();
+
+	for (int i = 0; i <= formula.length() - check; i++) {
+	    String sub = formula.substring(i, i + check);
+	    if (sub.matches(regex)) {
+		formula = formula.replace(sub, sub.replace(from, to));
+	    }
+	}
+	newCell.setCellFormula(formula);
+    }
+
+    /**
+     * this function should ONLY be used for cells of Cell Type Formula and in
+     * Range of A to Z
+     * 
+     * @param old
+     * @param newCell
+     * @return
+     */
+    private static String getRegex(HSSFCell old, HSSFCell newCell) {
+	if (old.getCellType() != HSSFCell.CELL_TYPE_FORMULA || newCell.getCellType() != HSSFCell.CELL_TYPE_FORMULA)
+	    throw new RuntimeException("Invalid Cell Type");
+
+	if (old.getColumnIndex() > 26 || newCell.getColumnIndex() > 26) {
+	    throw new RuntimeException("Only Implemented for Rows A to Z");
+	}
+
+	char oldChar = (char) (((int) 'A') + old.getColumnIndex());
+	return oldChar + "[0-9]+";
     }
 }
