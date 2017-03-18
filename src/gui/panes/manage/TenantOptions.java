@@ -183,6 +183,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	btnSpeichern.addActionListener(this);
 	add(btnSpeichern, "cell 1 7,alignx left,aligny center");
 	add(btnNeuerMieter, "cell 1 8,alignx left,aligny center");
+	clear();
 
     }
 
@@ -203,7 +204,10 @@ public class TenantOptions extends JPanel implements ActionListener {
      * @param t
      */
     private void initValues(Tenant t) {
-
+	if (t == null) {
+	    clear();
+	    return;
+	}
 	Calendar cal = Calendar.getInstance();
 
 	moveIn.setValue(t.getMoveIn());
@@ -238,6 +242,16 @@ public class TenantOptions extends JPanel implements ActionListener {
 	heitzKosten.setValue(t.getHeaterCost(cal.get(Calendar.YEAR)));
 
 	saveOldValues();
+    }
+
+    /**
+     * used to wipe information from this window
+     */
+    public void clear() {
+	txtName.setValue("");
+	rent.setValue(0);
+	persoZahl.setValue(0);
+	einzahlung.setValue(0);
     }
 
     private void saveValues() {

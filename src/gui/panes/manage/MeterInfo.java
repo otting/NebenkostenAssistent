@@ -67,6 +67,7 @@ public class MeterInfo extends JPanel implements DbNames {
 
 	meterDataList = new JList<MeterData>(new DefaultListModel<MeterData>());
 	add(meterDataList, "cell 0 2,grow");
+	clear();
 
     }
 
@@ -92,11 +93,17 @@ public class MeterInfo extends JPanel implements DbNames {
 	}
     }
 
+    public void clear() {
+	setVisible(false);
+	meterDataList.setModel(new DefaultListModel<>());
+    }
+
     public void loadInfo(Meter m) {
 	if (m == null) {
 	    System.err.println("Error Loading Meterinfo, Meter is null");
 	    return;
 	}
+	setVisible(true);
 	meter = m;
 	setMainMeter(m.isMain());
 	DefaultListModel<MeterData> newModel = new DefaultListModel<>();

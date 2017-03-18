@@ -47,7 +47,7 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
 
     public MeterOption(ManagePane mp) {
 	setBorder(null);
-	setLayout(new MigLayout("", "[143px][86px][83px]", "[23px][23px][20px]"));
+	setLayout(new MigLayout("", "[grow][grow][grow]", "[23px][23px][20px]"));
 
 	JButton btnNewData = new JButton("neuen Stand eintragen");
 	add(btnNewData, "cell 0 0,alignx center,aligny center");
@@ -55,9 +55,9 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
 	newDataString = btnNewData.getActionCommand();
 
 	meterData = new JFormattedTextField(NumberFormat.getNumberInstance());
-	meterData.setColumns(10);
+	meterData.setColumns(20);
 	meterData.setToolTipText("Z\u00E4hlerstand");
-	add(meterData, "cell 1 0,alignx left,aligny center");
+	add(meterData, "cell 1 0,growx,aligny center");
 
 	Calendar cal = Calendar.getInstance();
 	dateSpinner = new JSpinner(new SpinnerDateModel(new Date(cal.getTimeInMillis()), null, null, Calendar.MONTH));
@@ -71,7 +71,7 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
 
 	serialNumber = new JTextField();
 	serialNumber.setToolTipText("Seriennummer");
-	add(serialNumber, "cell 1 1,alignx left,aligny center");
+	add(serialNumber, "cell 1 1,growx,aligny center");
 	serialNumber.setColumns(10);
 
 	isMain = new JCheckBox("Hauptz\u00E4hler");

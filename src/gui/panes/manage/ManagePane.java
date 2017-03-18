@@ -72,30 +72,19 @@ public class ManagePane extends JPanel {
 	// METER
 	meterPane = new JPanel();
 	tabbedPane.addTab("Z\u00E4hler", null, meterPane, null);
-	meterPane.setLayout(new MigLayout("", "[334px,grow 300][106px,grow]", "[272px]"));
+	meterPane.setLayout(new MigLayout("", "[300px, grow][300px, grow]", "[grow 100][grow]"));
 
 	JPanel meterSelect = new JPanel();
-	meterPane.add(meterSelect, "cell 0 0,alignx left,growy");
+	meterPane.add(meterSelect, "cell 0 0");
 	meterSelect.setLayout(new MigLayout("", "[grow][grow][grow]", "[grow]"));
 	JPanel optionInfo = new JPanel(new GridLayout(2, 1));
 
 	meterInfo = new MeterInfo();
 	optionInfo.add(new MeterOption(this));
 	optionInfo.add(meterInfo);
-	meterPane.add(optionInfo, "cell 1 0,alignx left,growy");
+	meterPane.add(optionInfo, "cell 1 0 ,growy");
 
 	// Listener
-
-	tenant.addListSelectionListener(new ListSelectionListener() {
-
-	    @Override
-	    public void valueChanged(ListSelectionEvent e) {
-		if (tenant.getSelectedIndex() != -1) {
-		    Tenant t = (Tenant) tenant.getSelectedValue();
-		    tenantOptionPane.setSelectedTenant(t);
-		}
-	    }
-	});
 
 	tabbedPane.addChangeListener(new ChangeListener() {
 
@@ -121,15 +110,15 @@ public class ManagePane extends JPanel {
 	    @Override
 	    public void valueChanged(ListSelectionEvent e) {
 		House h = (House) ManagePane.this.house.getSelectedValue();
-		flat.setSelectedIndex(-1);
+		flat.clearSelection();
 		flat.filter(h);
 		flat.repaint();
 
-		meter.setSelectedIndex(-1);
+		meter.clearSelection();
 		meter.filter(h);
 		meter.repaint();
 
-		tenant.setSelectedIndex(-1);
+		tenant.clearSelection();
 		tenant.filter(h);
 		tenant.repaint();
 	    }
@@ -140,14 +129,28 @@ public class ManagePane extends JPanel {
 	    @Override
 	    public void valueChanged(ListSelectionEvent e) {
 		Flat h = (Flat) ManagePane.this.flat.getSelectedValue();
-
-		meter.setSelectedIndex(-1);
+		if (h == null)
+		    tenantOptionPane.clear();
+		meter.clearSelection();
 		meter.filter(h);
 		meter.repaint();
-
-		tenant.setSelectedIndex(-1);
+		tenant.clearSelection();
+		tenant.clearSelection();
 		tenant.filter(h);
 		tenant.repaint();
+	    }
+	});
+
+	tenant.addListSelectionListener(new ListSelectionListener() {
+
+	    @Override
+	    public void valueChanged(ListSelectionEvent e) {
+		if (tenant.getSelectedIndex() != -1) {
+		    Tenant t = (Tenant) tenant.getSelectedValue();
+		    tenantOptionPane.setSelectedTenant(t);
+		} else {
+		    tenantOptionPane.clear();
+		}
 	    }
 	});
 
@@ -158,6 +161,8 @@ public class ManagePane extends JPanel {
 		Meter m = (Meter) meter.getSelectedValue();
 		if (m != null) {
 		    meterInfo.loadInfo(m);
+		} else {
+		    meterInfo.clear();
 		}
 	    }
 	});

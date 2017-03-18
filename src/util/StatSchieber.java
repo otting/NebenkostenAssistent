@@ -36,10 +36,6 @@ public class StatSchieber {
 	}
     }
 
-    public static ExcelHandle getMyExl() {
-	return myExl;
-    }
-
     public static void setMyExl(ExcelHandle myExl) {
 	StatSchieber.myExl = myExl;
     }
