@@ -77,14 +77,14 @@ public class Flat implements DbNames, LoadAble {
 	LinkedList<Tenant> remain = new LinkedList<Tenant>();
 
 	for (Tenant t : tenants) {
-	    if (t.getMoveIn().after(end) || t.getMoveOut().before(start)) {
+	    if (t.getMoveIn().after(end) || t.getMoveOut().before(start) || t.getMoveOut().equals(start)) {
 		;
 	    } else {
 		remain.add(t);
 	    }
 	}
 
-	return tenants;
+	return remain;
 
     }
 
