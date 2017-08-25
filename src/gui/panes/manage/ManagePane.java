@@ -236,6 +236,10 @@ public class ManagePane extends JPanel {
 	meter.refresh();
     }
 
+    public void refreshTenant() {
+	tenant.refresh();
+    }
+
     public MeterInfo getMeterInfo() {
 	return meterInfo;
 

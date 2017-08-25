@@ -226,6 +226,8 @@ public class Calculation implements DbNames {
 	Date s = start;
 	Date e = end;
 
+	if (tenant.getMoveOut().before(start))
+	    return 0.0;
 	if (tenant.getMoveIn().after(start))
 
 	{

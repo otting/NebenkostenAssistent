@@ -237,8 +237,9 @@ public class TenantOptions extends JPanel implements ActionListener {
 	}
 
 	einzahlung.setValue(t.getBalance(cal.getTime()));
+	cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
 	einzahlDatum.setValue(cal.getTime());
-	cal.setTime((Date) heitzDatum.getValue());
+	heitzDatum.setValue(cal.getTime());
 	heitzKosten.setValue(t.getHeaterCost(cal.get(Calendar.YEAR)));
 
 	saveOldValues();
@@ -292,7 +293,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    parent.setHeatCost(value, (Date) heitzDatum.getValue());
 	}
 	int index = parent.getTenantIndex();
-	parent.refreshAll();
+	parent.refreshTenant();
 	parent.setTenantIndex(index);
 
     }
@@ -307,9 +308,9 @@ public class TenantOptions extends JPanel implements ActionListener {
     }
 
     /**
-     * it is crucial that this method is called AFTER loading values for a
-     * tenant. The values will later on be used to decide rather a value has to
-     * be saved or not
+     * it is crucial that this method is called AFTER loading values for a tenant.
+     * The values will later on be used to decide rather a value has to be saved or
+     * not
      */
     private void saveOldValues() {
 	oldValues = new HashMap<String, String>();
