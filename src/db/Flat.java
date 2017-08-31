@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 
+import gui.ErrorHandle;
+
 public class Flat implements DbNames, LoadAble {
 
     private final int id;
@@ -177,5 +179,38 @@ public class Flat implements DbNames, LoadAble {
     public Flat getFlat() {
 	return this;
     }
+
+	public double getGrundsteuer(int year){
+		int lastYear=0;
+		int rYear;
+		double value = 0f;
+		for(Row r : DbHandle.findAll(MESSBETRAG_TABLE, MESSBETRAG_SQUAREMETER, getSquaremeter())){
+			rYear = r.getInt(MESSBETRAG_YEAR);
+			if(rYear > lastYear && rYear < year) {
+				value = r.getDouble(MESSBETRAG_VALUE);
+				lastYear = rYear;
+			}
+		}
+		if(value == 0f) {
+			ErrorHandle.popUp("Es gibt keinen Messbetrag für:\n"+getSquaremeter()+" quadratmeter im Jahr "+year);
+		}
+		return value * (getHebesatz(year));
+	}
+	
+	public static double getHebesatz(int year) {
+		int lastYear = 0, rYear;
+		double value = 0f;
+		for(Row r : DbHandle.getTable(HEBESATZ_TABLE)) {
+			rYear = r.getInt(HEBESATZ_YEAR);
+			if(rYear <= year && rYear >lastYear) {
+				lastYear = rYear;
+				value = r.getDouble(HEBESATZ_VALUE);
+			}
+		}
+		if(value == 0f) {
+			ErrorHandle.popUp("Es ist kein Hebesatz für das jahr "+year +"verfügbar");
+		}
+		return value;
+	}
 
 }

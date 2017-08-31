@@ -60,6 +60,7 @@ public class ExcelExport {
      * @param exl
      * @param b
      * @param year
+     * @throws Exception 
      */
     private static void exportBill(ExcelHandle exl, TenantBill b, int year) {
 	exl.selectLastSheet();
@@ -77,6 +78,7 @@ public class ExcelExport {
 	exl.replace("*HEIZUNG*", b.getHeater());
 	exl.replace("*START*", b.getStart());
 	exl.replace("*ENDE*", b.getEnd());
+	exl.replace("*GRUNDWOHNUNG*", b.getFlat().getGrundsteuer(year));
 
 	exl.replace("*MIETE*", b.getTenant().getRent(year));
 	Calendar cal = Calendar.getInstance();
@@ -88,6 +90,10 @@ public class ExcelExport {
 
 	// Leerstand
 	if (b.getTenant().getName().equals("Leerstand")) {
+		//Kabel Extra Kosten
+		exl.replace("*BEREITSTELLUNG*", 0);
+		exl.replace("*HAUSVERTEILUNG*", 0);
+		
 	    // Garage
 	    exl.replace("*GARAGECOUNT*", 0);
 	    exl.replace("*GARAGE*", 0);
@@ -99,7 +105,10 @@ public class ExcelExport {
 	    exl.replace("*NEXTSTELLPRENT*", 0);
 	    return;
 	}
-
+	//Kabel Extra Kosten
+	exl.replace("*BEREITSTELLUNG*", b.getTenant().getCableProvidingCost(year));
+	exl.replace("*HAUSVERTEILUNG*", b.getTenant().getHouseCableSupplyCost(year));
+	
 	// Garage
 	exl.replace("*GARAGECOUNT*", b.getTenant().getGarageUsage(year));
 	exl.replace("*GARAGE*", b.getTenant().getGarageRent(year));

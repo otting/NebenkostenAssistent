@@ -258,8 +258,7 @@ public class ManagePane extends JPanel {
     }
 
     public void setHeatCost(Double value, Date d) {
-	Tenant t = (Tenant) tenant.getSelectedValue();
-	TenantInput.setHeatCost(t, value, d);
+	TenantInput.setHeatCost(getTenant(), value, d);
     }
 
     public Tenant getTenant() {
