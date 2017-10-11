@@ -72,6 +72,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JButton btnCalculation;
     private JButton btnManageHouses;
     private JButton btnHouseCost;
+    private JButton btnGaragenUStellpltze;
 
     /**
      * Create the frame.
@@ -125,7 +126,8 @@ public class MainFrame extends JFrame implements ActionListener {
 	panel.add(btnHouseCost);
 	btnHouseCost.setEnabled(activeBtn);
 
-	JButton btnGaragenUStellpltze = new JButton("Garagen");
+	btnGaragenUStellpltze = new JButton("Garagen");
+	btnGaragenUStellpltze.setEnabled(activeBtn);
 	btnGaragenUStellpltze.addActionListener(this);
 	panel.add(btnGaragenUStellpltze);
 	btnHouseCost.addActionListener(this);
@@ -136,33 +138,38 @@ public class MainFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	switch (e.getActionCommand()) {
-	case "Haus Verwaltung":
-	    new WorkFrame(this, new ManagePane(), "Manage");
-	    break;
-	case "Abrechnung Erstellen":
-	    new WorkFrame(this, new AbrechnungPane(), "Abrechnung");
-	    break;
-	case "Haus Kosten Verwaltung":
-	    new WorkFrame(this, new CostManage(), "CostManage");
-	    break;
-	case "Open Database":
-	    File f = FileOpen.open("accdb", "Open Database");
-	    if (f != null) {
-		DbHandle.openMainDB(f);
-		btnCalculation.setEnabled(true);
-		btnManageHouses.setEnabled(true);
-		btnHouseCost.setEnabled(true);
+	try {
+	    switch (e.getActionCommand()) {
+	    case "Haus Verwaltung":
+		new WorkFrame(this, new ManagePane(), "Manage");
+		break;
+	    case "Abrechnung Erstellen":
+		new WorkFrame(this, new AbrechnungPane(), "Abrechnung");
+		break;
+	    case "Haus Kosten Verwaltung":
+		new WorkFrame(this, new CostManage(), "CostManage");
+		break;
+	    case "Open Database":
+		File f = FileOpen.open("accdb", "Open Database");
+		if (f != null) {
+		    DbHandle.openMainDB(f);
+		    btnCalculation.setEnabled(true);
+		    btnManageHouses.setEnabled(true);
+		    btnHouseCost.setEnabled(true);
+		    btnGaragenUStellpltze.setEnabled(true);
+		}
+		break;
+	    case "Einstellungen":
+		GuiScaler.openOptions(this);
+		break;
+	    case "Garagen":
+		new WorkFrame(this, new GarageHub(), "GSHub");
+		break;
+	    default:
+		System.out.println(e.getActionCommand());
 	    }
-	    break;
-	case "Einstellungen":
-	    GuiScaler.openOptions(this);
-	    break;
-	case "Garagen":
-	    new WorkFrame(this, new GarageHub(), "GSHub");
-	    break;
-	default:
-	    System.out.println(e.getActionCommand());
+	} catch (Exception ex) {
+	    ErrorHandle.unknowenError(ex);
 	}
 
     }

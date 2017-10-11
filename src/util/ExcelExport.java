@@ -20,18 +20,13 @@ public class ExcelExport {
     }
 
     public static void exportBills(int year, House house, HouseBill houseBill, LinkedList<TenantBill> bills)
-	    throws IOException {
+	    throws IOException, InterruptedException, InvalidAttributesException {
 	String exlName = house.toString() + year + ".xls";
 	ExcelHandle exl = null;
 	exl = loadTemplate(exlName);
 
-	try {
-	    exportHouseInfo(exl, houseBill, year);
-	} catch (InvalidAttributesException e) {
+	exportHouseInfo(exl, houseBill, year);
 
-	    e.printStackTrace();
-	    return;
-	}
 	for (TenantBill tb : bills) {
 	    exportBill(exl, tb, year);
 	}
@@ -60,9 +55,10 @@ public class ExcelExport {
      * @param exl
      * @param b
      * @param year
-     * @throws Exception 
+     * @throws InterruptedException
+     * @throws Exception
      */
-    private static void exportBill(ExcelHandle exl, TenantBill b, int year) {
+    private static void exportBill(ExcelHandle exl, TenantBill b, int year) throws InterruptedException {
 	exl.selectLastSheet();
 	exl.cloneLastSheet();
 	exl.renameSelectedSheet(b.getTenant().getName());
@@ -90,10 +86,10 @@ public class ExcelExport {
 
 	// Leerstand
 	if (b.getTenant().getName().equals("Leerstand")) {
-		//Kabel Extra Kosten
-		exl.replace("*BEREITSTELLUNG*", 0);
-		exl.replace("*HAUSVERTEILUNG*", 0);
-		
+	    // Kabel Extra Kosten
+	    exl.replace("*BEREITSTELLUNG*", 0);
+	    exl.replace("*HAUSVERTEILUNG*", 0);
+
 	    // Garage
 	    exl.replace("*GARAGECOUNT*", 0);
 	    exl.replace("*GARAGE*", 0);
@@ -105,10 +101,10 @@ public class ExcelExport {
 	    exl.replace("*NEXTSTELLPRENT*", 0);
 	    return;
 	}
-	//Kabel Extra Kosten
+	// Kabel Extra Kosten
 	exl.replace("*BEREITSTELLUNG*", b.getTenant().getCableProvidingCost(year));
 	exl.replace("*HAUSVERTEILUNG*", b.getTenant().getHouseCableSupplyCost(year));
-	
+
 	// Garage
 	exl.replace("*GARAGECOUNT*", b.getTenant().getGarageUsage(year));
 	exl.replace("*GARAGE*", b.getTenant().getGarageRent(year));
@@ -120,7 +116,8 @@ public class ExcelExport {
 	exl.replace("*NEXTSTELLPRENT*", b.getTenant().getFutureStellPRent(year));
     }
 
-    private static void exportHouseInfo(ExcelHandle exl, HouseBill b, int year) throws InvalidAttributesException {
+    private static void exportHouseInfo(ExcelHandle exl, HouseBill b, int year)
+	    throws InvalidAttributesException, InterruptedException {
 	exl.selectSheet("Haus");
 	exl.renameSelectedSheet(b.getHouse().toString());
 	exl.replace("*HAUS*", b.getHouse().toString());

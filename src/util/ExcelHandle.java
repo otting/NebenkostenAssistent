@@ -154,25 +154,25 @@ public class ExcelHandle {
 	}
     }
 
-    public void replace(String placeholder, String value) {
+    public void replace(String placeholder, String value) throws InterruptedException {
 	if (findCell(placeholder)) {
 	    cell.setCellValue(value);
 	}
     }
 
-    public void replace(String placeholder, int value) {
+    public void replace(String placeholder, int value) throws InterruptedException {
 	if (findCell(placeholder)) {
 	    cell.setCellValue(value);
 	}
     }
 
-    public void replace(String placeholder, double value) {
+    public void replace(String placeholder, double value) throws InterruptedException {
 	if (findCell(placeholder)) {
 	    cell.setCellValue(value);
 	}
     }
 
-    public void replace(String placeholder, Date value) {
+    public void replace(String placeholder, Date value) throws InterruptedException {
 	if (findCell(placeholder)) {
 	    cell.setCellValue(value);
 	}
@@ -189,7 +189,7 @@ public class ExcelHandle {
 	return workbook.getSheetIndex(sheet);
     }
 
-    private boolean findCell(String placeholder) {
+    private boolean findCell(String placeholder) throws InterruptedException {
 	for (Row r : sheet) {
 	    row = sheet.getRow(r.getRowNum());
 	    for (Cell c : r) {
@@ -200,7 +200,10 @@ public class ExcelHandle {
 		    }
 	    }
 	}
-	ErrorHandle.popUp("Could not find placeholder: " + placeholder + " in " + path + ":" + sheet.getSheetName());
+	if (!ErrorHandle.askYesNo("Could not find placeholder: " + placeholder + " in " + path + ":"
+		+ sheet.getSheetName() + "\nContinue?")) {
+	    throw new InterruptedException("Placeholder " + placeholder + " not found");
+	}
 	return false;
     }
 
@@ -307,8 +310,8 @@ public class ExcelHandle {
     }
 
     /**
-     * this function should ONLY be used for cells of Cell Type Formula and in
-     * Range of A to Z
+     * this function should ONLY be used for cells of Cell Type Formula and in Range
+     * of A to Z
      */
     private static void replaceFormula(HSSFCell old, HSSFCell newCell) {
 	String regex = getRegex(old, newCell);
@@ -327,8 +330,8 @@ public class ExcelHandle {
     }
 
     /**
-     * this function should ONLY be used for cells of Cell Type Formula and in
-     * Range of A to Z
+     * this function should ONLY be used for cells of Cell Type Formula and in Range
+     * of A to Z
      * 
      * @param old
      * @param newCell

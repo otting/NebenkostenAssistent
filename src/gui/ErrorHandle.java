@@ -1,6 +1,10 @@
 package gui;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -28,5 +32,53 @@ public class ErrorHandle {
 
     public static void activate() {
 	active = true;
+    }
+
+    public static void unknowenError(Exception e) {
+	popUp("Ein unerwarteter Fehler ist aufgetreten" + "\nBitte senden sie ErrorLog.txt an den Entwickler.");
+	File f = new File("ErrorLog.txt");
+
+	if (f.exists()) {
+	    appendText(f, e);
+	} else {
+	    try {
+		write(new BufferedWriter(new FileWriter(f)), e);
+	    } catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	    }
+	}
+    }
+
+    private static void appendText(File f, Exception e) {
+	try {
+	    BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
+	    write(writer, e);
+	} catch (IOException ex) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
+    }
+
+    private static void write(BufferedWriter writer, Exception e) {
+	try {
+	    writer.write("\n------------------------------------------------------\n");
+	    writer.write(e.toString() + "\n");
+	    for (StackTraceElement st : e.getStackTrace()) {
+		writer.write(st.toString() + "\n");
+	    }
+	} catch (IOException e1) {
+	    // TODO Auto-generated catch block
+	    e1.printStackTrace();
+	} finally {
+	    try {
+		writer.close();
+	    } catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	    }
+	}
+
     }
 }
