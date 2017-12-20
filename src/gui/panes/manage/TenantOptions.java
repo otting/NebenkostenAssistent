@@ -60,6 +60,7 @@ public class TenantOptions extends JPanel implements ActionListener {
     private JLabel lblNichtFestgelegt;
     private JLabel lblKaltmietemonatlich;
     private JLabel lblName;
+    private boolean showNotNeeded = true;
 
     public TenantOptions(ManagePane mp) {
 	parent = mp;
@@ -109,13 +110,14 @@ public class TenantOptions extends JPanel implements ActionListener {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(d);
 		Tenant t = parent.getTenant();
-		if (t != null && d != null)
+		if (t != null && d != null) {
 		    rent.setValue(t.getRent(cal.get(Calendar.YEAR)));
 
-		auszugDatum.setValue(rentDate.getValue());
-		einzahlDatum.setValue(rentDate.getValue());
-		heitzDatum.setValue(rentDate.getValue());
-		verteilerDatum.setValue(rentDate.getValue());
+		    einzahlDatum.setValue(rentDate.getValue());
+		    heitzDatum.setValue(rentDate.getValue());
+		    verteilerDatum.setValue(rentDate.getValue());
+		    bereitstellungsDatum.setValue(rentDate.getValue());
+		}
 	    }
 	});
 
@@ -136,7 +138,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	add(einzahlung, "cell 1 6,alignx left,aligny center");
 
 	einzahlDatum = new JSpinner();
-	einzahlDatum.setVisible(false);
+	einzahlDatum.setVisible(showNotNeeded);
 	einzahlDatum.setEnabled(false);
 	einzahlDatum.setModel(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
 	einzahlDatum.setEditor(new JSpinner.DateEditor(einzahlDatum, "yyyy"));
@@ -160,7 +162,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	add(heitzKosten, "cell 1 7,alignx left,aligny center");
 
 	heitzDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
-	heitzDatum.setVisible(false);
+	heitzDatum.setVisible(showNotNeeded);
 	heitzDatum.setEnabled(false);
 	heitzDatum.setEditor(new JSpinner.DateEditor(heitzDatum, "yyyy"));
 	add(heitzDatum, "cell 2 7,alignx left,aligny center");
@@ -184,7 +186,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	bereitstellungsKosten.setColumns(15);
 	add(bereitstellungsKosten, "cell 1 8,alignx left,aligny center");
 	bereitstellungsDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
-	bereitstellungsDatum.setVisible(false);
+	bereitstellungsDatum.setVisible(showNotNeeded);
 	bereitstellungsDatum.setEnabled(false);
 	bereitstellungsDatum.setEditor(new JSpinner.DateEditor(bereitstellungsDatum, "yyyy"));
 	add(bereitstellungsDatum, "cell 2 8,alignx left,aligny center");
@@ -208,7 +210,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	add(verteilerKosten, "cell 1 9,alignx left,aligny center");
 	verteilerDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
 	verteilerDatum.setEnabled(false);
-	verteilerDatum.setVisible(false);
+	verteilerDatum.setVisible(showNotNeeded);
 	verteilerDatum.setEditor(new JSpinner.DateEditor(verteilerDatum, "yyyy"));
 	add(verteilerDatum, "cell 2 9,alignx left,aligny center");
 	verteilerDatum.addChangeListener(new ChangeListener() {
@@ -250,7 +252,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	persoDatum = new JSpinner(new SpinnerDateModel(new Date(1460671200000L), null, null, Calendar.MONTH));
 	persoDatum.setEditor(new JSpinner.DateEditor(persoDatum, "dd.MM.yyyy"));
 	add(persoDatum, "cell 1 3,alignx left,aligny center");
-	lblNichtFestgelegt.setVisible(false);
+	lblNichtFestgelegt.setVisible(showNotNeeded);
 	clear();
 
     }
@@ -287,12 +289,11 @@ public class TenantOptions extends JPanel implements ActionListener {
 	}
 	lblNichtFestgelegt.setVisible((d.getTime() == Long.MAX_VALUE));
 
+	cal.setTime((Date) rentDate.getValue());
 	int year = cal.get(Calendar.YEAR);
 
 	txtName.setValue(t.getName());
 	rent.setValue(t.getRent(year));
-	cal.set(t.getLastRentYear(), 1, 1);
-	rentDate.setValue(cal.getTime());
 	cal = Calendar.getInstance();
 	PersonCount pc = t.getPersonCount();
 	try {
@@ -304,8 +305,8 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    persoDatum.setValue(new Date(0));
 	}
 
+	cal.setTime((Date) rentDate.getValue());
 	einzahlung.setValue(t.getBalance(cal.getTime()));
-	cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - 1);
 	einzahlDatum.setValue(cal.getTime());
 	heitzDatum.setValue(cal.getTime());
 	heitzKosten.setValue(t.getHeaterCost(cal.get(Calendar.YEAR)));

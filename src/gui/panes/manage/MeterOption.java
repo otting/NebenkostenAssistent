@@ -60,6 +60,8 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
 	add(meterData, "cell 1 0,growx,aligny center");
 
 	Calendar cal = Calendar.getInstance();
+	cal.set(Calendar.MONTH, 11);
+	cal.set(Calendar.DATE, 31);
 	dateSpinner = new JSpinner(new SpinnerDateModel(new Date(cal.getTimeInMillis()), null, null, Calendar.MONTH));
 	dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "dd.MM.yyyy"));
 	add(dateSpinner, "cell 2 0,growx,aligny center");
