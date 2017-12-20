@@ -236,8 +236,8 @@ public class House implements DbNames, LoadAble {
     }
 
     /**
-     * special case of LoadAble method, returns first flat in the house for
-     * further usage
+     * special case of LoadAble method, returns first flat in the house for further
+     * usage
      */
     @Override
     public Flat getFlat() {
@@ -252,10 +252,8 @@ public class House implements DbNames, LoadAble {
     public double getBaseTax(int year) {
 
 	double val = 0;
-	for (Row r : DbHandle.findAll(BASE_TAX_TABLE, BASE_TAX_YEAR, year)) {
-	    if (r.getInt(BASE_TAX_HOUSE) == getId()) {
-		val = r.getDouble(BASE_TAX_VALUE);
-	    }
+	for (Flat f : getFlats()) {
+	    val += f.getGrundsteuer(year);
 	}
 
 	return val;

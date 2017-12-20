@@ -21,6 +21,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerDateModel;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataListener;
@@ -51,8 +52,8 @@ public class OneHouse extends JPanel implements ChangeListener, ActionListener {
      */
 
     public OneHouse() {
-	setLayout(new MigLayout("", "[1px][9px][grow][grow][grow][grow]",
-		"[1px][55px][87px][20px][20px][20px][][23px][]"));
+	setLayout(new MigLayout("", "[1px][9px][108.00,grow][93.00,grow][grow][grow]",
+		"[1px][55px][87px][20px][20px][20px][][23px,grow][]"));
 
 	JLabel lblAbrechnungsjahr = new JLabel("Abrechnungsjahr:");
 	add(lblAbrechnungsjahr, "cell 0 2 3 1,alignx right,aligny center");
@@ -127,7 +128,12 @@ public class OneHouse extends JPanel implements ChangeListener, ActionListener {
 
 	grundsteuer = new JFormattedTextField(NumberFormat.getNumberInstance());
 	grundsteuer.setColumns(20);
+	grundsteuer.setEditable(false);
 	add(grundsteuer, "cell 3 6,alignx left");
+
+	JLabel iconFragezeichen = new JLabel(UIManager.getIcon("OptionPane.questionIcon"));
+	iconFragezeichen.setToolTipText("Grundsteuer & Hebesatz f\u00FCr Wohnungen sind in Access hinterlegt.");
+	add(iconFragezeichen, "cell 4 6");
 
 	add(btnSave, "cell 4 7,growx,aligny top");
 
