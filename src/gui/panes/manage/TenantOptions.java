@@ -60,7 +60,7 @@ public class TenantOptions extends JPanel implements ActionListener {
     private JLabel lblNichtFestgelegt;
     private JLabel lblKaltmietemonatlich;
     private JLabel lblName;
-    private boolean showNotNeeded = true;
+    private boolean showNotNeeded = false;
 
     public TenantOptions(ManagePane mp) {
 	parent = mp;
