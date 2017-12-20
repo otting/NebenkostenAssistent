@@ -34,14 +34,13 @@ public class ManagePane extends JPanel {
 
     private CustomJList house, flat, tenant, meter;
     private JPanel tenantPane, meterPane;
-    private MeterInfo meterInfo;
     private TenantOptions tenantOptionPane;
+    private MeterOption meterOptions;
 
     /**
      * Create the panel.
      */
     public ManagePane() {
-	meterInfo = new MeterInfo();
 	setLayout(new GridLayout(1, 0, 0, 0));
 
 	JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
@@ -77,12 +76,8 @@ public class ManagePane extends JPanel {
 	JPanel meterSelect = new JPanel();
 	meterPane.add(meterSelect, "cell 0 0");
 	meterSelect.setLayout(new MigLayout("", "[grow][grow][grow]", "[grow]"));
-	JPanel optionInfo = new JPanel(new GridLayout(2, 1));
-
-	meterInfo = new MeterInfo();
-	optionInfo.add(new MeterOption(this));
-	optionInfo.add(meterInfo);
-	meterPane.add(optionInfo, "cell 1 0 ,growy");
+	setMeterOptions(new MeterOption(this));
+	meterPane.add(getMeterOptions(), "cell 1 0 ,growy");
 
 	// Listener
 
@@ -160,9 +155,9 @@ public class ManagePane extends JPanel {
 	    public void valueChanged(ListSelectionEvent arg0) {
 		Meter m = (Meter) meter.getSelectedValue();
 		if (m != null) {
-		    meterInfo.loadInfo(m);
+		    getMeterInfo().loadInfo(m);
 		} else {
-		    meterInfo.clear();
+		    getMeterInfo().clear();
 		}
 	    }
 	});
@@ -241,7 +236,7 @@ public class ManagePane extends JPanel {
     }
 
     public MeterInfo getMeterInfo() {
-	return meterInfo;
+	return getMeterOptions().getMeterInfo();
 
     }
 
@@ -271,6 +266,14 @@ public class ManagePane extends JPanel {
 
     public void setTenantIndex(int index) {
 	tenant.setSelectedIndex(index);
+    }
+
+    public MeterOption getMeterOptions() {
+	return meterOptions;
+    }
+
+    public void setMeterOptions(MeterOption meterOptions) {
+	this.meterOptions = meterOptions;
     }
 
 }

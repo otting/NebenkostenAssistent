@@ -44,10 +44,11 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
     private String newDataString, newMeterString;
     private JSpinner kindSpinner;
     private HashMap<String, Integer> meterKinds;
+    private JPanel infoPanel;
 
     public MeterOption(ManagePane mp) {
 	setBorder(null);
-	setLayout(new MigLayout("", "[grow][grow][grow]", "[23px][23px][20px]"));
+	setLayout(new MigLayout("", "[grow][grow][grow]", "[23px][23px][20px][grow]"));
 
 	JButton btnNewData = new JButton("neuen Stand eintragen");
 	add(btnNewData, "cell 0 0,alignx center,aligny center");
@@ -89,6 +90,9 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
 	kindSpinner.setModel(new SpinnerListModel(meterKinds.keySet().toArray()));
 	kindSpinner.getModel().setValue("-");
 	add(kindSpinner, "cell 1 2,growx,aligny center");
+
+	infoPanel = new MeterInfo();
+	add(infoPanel, "cell 0 3 3 1,grow");
 	parent = mp;
 
     }
@@ -134,6 +138,10 @@ public class MeterOption extends JPanel implements ActionListener, DbNames {
 	MeterInput.addMeter(serialNumber.getText(), f, kind, main);
 	kindSpinner.setValue("-");
 	parent.refreshMeter();
+    }
+
+    public MeterInfo getMeterInfo() {
+	return (MeterInfo) infoPanel;
     }
 
     private void newData() {

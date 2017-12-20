@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.healthmarketscience.jackcess.Row;
 
@@ -37,6 +39,7 @@ public class MeterInfo extends JPanel implements DbNames {
 
     private JList<MeterData> meterDataList;
     private Meter meter;
+    JButton btnEintragLschen;
 
     public MeterInfo() {
 	setBorder(new MatteBorder(1, 0, 0, 0, Color.BLACK));
@@ -51,7 +54,7 @@ public class MeterInfo extends JPanel implements DbNames {
 	main = new JLabel("Ja/Nein");
 	panel.add(main);
 
-	JButton btnEintragLschen = new JButton("Eintrag l\u00F6schen");
+	btnEintragLschen = new JButton("Eintrag l\u00F6schen");
 	btnEintragLschen.addActionListener(new ActionListener() {
 
 	    @Override
@@ -94,8 +97,14 @@ public class MeterInfo extends JPanel implements DbNames {
     }
 
     public void clear() {
-	setVisible(false);
+
+	setEnabled(false);
+	meter = null;
 	meterDataList.setModel(new DefaultListModel<>());
+    }
+
+    public void setEnabled(boolean b) {
+	btnEintragLschen.setEnabled(b);
     }
 
     public void loadInfo(Meter m) {
@@ -103,7 +112,8 @@ public class MeterInfo extends JPanel implements DbNames {
 	    System.err.println("Error Loading Meterinfo, Meter is null");
 	    return;
 	}
-	setVisible(true);
+	setEnabled(true);
+	getParent().getParent().repaint();
 	meter = m;
 	setMainMeter(m.isMain());
 	DefaultListModel<MeterData> newModel = new DefaultListModel<>();

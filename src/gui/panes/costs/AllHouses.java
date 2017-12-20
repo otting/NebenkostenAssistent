@@ -29,6 +29,8 @@ import db.House;
 import db.input.HouseInput;
 import gui.ErrorHandle;
 import net.miginfocom.swing.MigLayout;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class AllHouses extends JPanel {
 
@@ -63,6 +65,7 @@ public class AllHouses extends JPanel {
 
 	gardenModel = new DefaultListModel<String>();
 	gardenCostlist = new JList<>(gardenModel);
+	gardenCostlist.setBorder(new LineBorder(new Color(0, 0, 0)));
 	gardenCostlist.setToolTipText("Gartenarbeit");
 	add(gardenCostlist, "cell 3 0 1 5,grow");
 
