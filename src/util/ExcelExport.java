@@ -72,6 +72,7 @@ public class ExcelExport {
 	exl.replace("*WASSER_WARM*", b.getHotWater());
 	exl.replace("*GEZAHLT*", b.getBalance());
 	exl.replace("*HEIZUNG*", b.getHeater());
+	exl.replace("*PRE_Heizung*", b.getTenant().getPrepayedHeaterCost(year));
 	exl.replace("*START*", b.getStart());
 	exl.replace("*ENDE*", b.getEnd());
 	exl.replace("*GRUNDWOHNUNG*", b.getFlat().getGrundsteuer(year));

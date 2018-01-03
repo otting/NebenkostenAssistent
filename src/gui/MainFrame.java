@@ -116,7 +116,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	panel.setLayout(new GridLayout(0, 1, 1, 5));
 	panel.add(btnCalculation);
 
-	btnManageHouses = new JButton("Haus Verwaltung");
+	btnManageHouses = new JButton("Mieter und Zähler");
 	btnManageHouses.setEnabled(activeBtn);
 	btnManageHouses.setBounds(new Rectangle(0, 0, 300, 30));
 	btnManageHouses.addActionListener(this);
@@ -140,7 +140,7 @@ public class MainFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 	try {
 	    switch (e.getActionCommand()) {
-	    case "Haus Verwaltung":
+	    case "Mieter und Zähler":
 		new WorkFrame(this, new ManagePane(), "Manage");
 		break;
 	    case "Abrechnung Erstellen":

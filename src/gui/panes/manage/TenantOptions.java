@@ -65,8 +65,8 @@ public class TenantOptions extends JPanel implements ActionListener {
     public TenantOptions(ManagePane mp) {
 	parent = mp;
 	Calendar cal = Calendar.getInstance();
-	setLayout(new MigLayout("", "[121px][139px][95px]",
-		"[20px][20px][20px][][][20px][20px][20px][23px][23px][][][]"));
+	setLayout(new MigLayout("", "[121px][139px,grow][95px]",
+		"[20px][20px][20px][][][20px][20px][20px][][23px][23px][][][]"));
 
 	lblName = new JLabel("Name:");
 	add(lblName, "cell 0 0,alignx right,aligny center");
@@ -153,6 +153,8 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    }
 	});
 
+	// Heizkosten
+
 	lblHeitzkosten = new JLabel("Heitzkosten:");
 	add(lblHeitzkosten, "cell 0 7,alignx right,aligny center");
 
@@ -166,6 +168,15 @@ public class TenantOptions extends JPanel implements ActionListener {
 	heitzDatum.setEnabled(false);
 	heitzDatum.setEditor(new JSpinner.DateEditor(heitzDatum, "yyyy"));
 	add(heitzDatum, "cell 2 7,alignx left,aligny center");
+
+	lblVorrauszahlungHeizkosten = new JLabel("Vorrauszahlung Heizkosten:");
+	add(lblVorrauszahlungHeizkosten, "cell 0 8,alignx right,aligny center");
+
+	prepayedHeater = new JFormattedTextField(NumberFormat.getNumberInstance());
+	prepayedHeater.setText("0");
+	prepayedHeater.setColumns(15);
+	add(prepayedHeater, "cell 1 8,growx");
+
 	heitzDatum.addChangeListener(new ChangeListener() {
 
 	    @Override
@@ -174,6 +185,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 		    Calendar cal = Calendar.getInstance();
 		    cal.setTime((Date) heitzDatum.getValue());
 		    heitzKosten.setValue(selected.getHeaterCost(cal.get(Calendar.YEAR)));
+		    prepayedHeater.setValue(selected.getPrepayedHeaterCost(cal.get(Calendar.YEAR)));
 		}
 	    }
 	});
@@ -181,15 +193,15 @@ public class TenantOptions extends JPanel implements ActionListener {
 	// Kabel Bereitstellung
 
 	lblBereitstellungskosten = new JLabel("Kabel Bereitstellungsgeb.");
-	add(lblBereitstellungskosten, "cell 0 8,alignx right,aligny center");
+	add(lblBereitstellungskosten, "cell 0 9,alignx right,aligny center");
 	bereitstellungsKosten = new JFormattedTextField(NumberFormat.getNumberInstance());
 	bereitstellungsKosten.setColumns(15);
-	add(bereitstellungsKosten, "cell 1 8,alignx left,aligny center");
+	add(bereitstellungsKosten, "cell 1 9,alignx left,aligny center");
 	bereitstellungsDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
 	bereitstellungsDatum.setVisible(showNotNeeded);
 	bereitstellungsDatum.setEnabled(false);
 	bereitstellungsDatum.setEditor(new JSpinner.DateEditor(bereitstellungsDatum, "yyyy"));
-	add(bereitstellungsDatum, "cell 2 8,alignx left,aligny center");
+	add(bereitstellungsDatum, "cell 2 9,alignx left,aligny center");
 	bereitstellungsDatum.addChangeListener(new ChangeListener() {
 
 	    @Override
@@ -204,15 +216,15 @@ public class TenantOptions extends JPanel implements ActionListener {
 	// Kabel Verteiler
 
 	lblVerteilerkosten = new JLabel("Kabel Verteilergeb.");
-	add(lblVerteilerkosten, "cell 0 9,alignx right,aligny center");
+	add(lblVerteilerkosten, "cell 0 10,alignx right,aligny center");
 	verteilerKosten = new JFormattedTextField(NumberFormat.getNumberInstance());
 	verteilerKosten.setColumns(15);
-	add(verteilerKosten, "cell 1 9,alignx left,aligny center");
+	add(verteilerKosten, "cell 1 10,alignx left,aligny center");
 	verteilerDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
 	verteilerDatum.setEnabled(false);
 	verteilerDatum.setVisible(showNotNeeded);
 	verteilerDatum.setEditor(new JSpinner.DateEditor(verteilerDatum, "yyyy"));
-	add(verteilerDatum, "cell 2 9,alignx left,aligny center");
+	add(verteilerDatum, "cell 2 10,alignx left,aligny center");
 	verteilerDatum.addChangeListener(new ChangeListener() {
 
 	    @Override
@@ -243,8 +255,8 @@ public class TenantOptions extends JPanel implements ActionListener {
 
 	btnSpeichern = new JButton("Speichern");
 	btnSpeichern.addActionListener(this);
-	add(btnSpeichern, "cell 1 11,alignx left,aligny center");
-	add(btnNeuerMieter, "cell 1 12,alignx left,aligny center");
+	add(btnSpeichern, "cell 1 12,alignx left,aligny center");
+	add(btnNeuerMieter, "cell 1 13,alignx left,aligny center");
 
 	lblNichtFestgelegt = new JLabel("NICHT FESTGELEGT");
 	add(lblNichtFestgelegt, "cell 1 2,alignx center,aligny center");
@@ -310,6 +322,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	einzahlDatum.setValue(cal.getTime());
 	heitzDatum.setValue(cal.getTime());
 	heitzKosten.setValue(t.getHeaterCost(cal.get(Calendar.YEAR)));
+	prepayedHeater.setValue(t.getPrepayedHeaterCost(cal.get(Calendar.YEAR)));
 	bereitstellungsDatum.setValue(cal.getTime());
 	bereitstellungsKosten.setValue(t.getCableProvidingCost(cal.get(Calendar.YEAR)));
 	verteilerDatum.setValue(cal.getTime());
@@ -364,6 +377,11 @@ public class TenantOptions extends JPanel implements ActionListener {
 	if (changed(heitzKosten) || changed(heitzDatum)) {
 	    value = textToDouble(heitzKosten.getText());
 	    parent.setHeatCost(value, (Date) heitzDatum.getValue());
+	}
+
+	if (changed(prepayedHeater)) {
+	    value = textToDouble(prepayedHeater.getText());
+	    TenantInput.setPrepayedHeatCost(selected, value, (Date) heitzDatum.getValue());
 	}
 	if (changed(verteilerDatum) || changed(verteilerKosten)) {
 	    TenantInput.setCableSupplyCost(parent.getTenant(), textToDouble(verteilerKosten.getText()),
@@ -444,6 +462,8 @@ public class TenantOptions extends JPanel implements ActionListener {
     private static int nonameIndex = 0;
     private JButton btnSpeichern;
     private JLabel lblJahr;
+    private JLabel lblVorrauszahlungHeizkosten;
+    private JFormattedTextField prepayedHeater;
 
     /**
      * puts the name of the component inside oldValues with the linked value as

@@ -18,18 +18,18 @@ public interface DbNames {
      * names for people count
      */
     String PEOPLE_COUNT_TENANT_ID = "ID_Mieter";
-    
+
     /**
      * Messbetrag table
      */
     String MESSBETRAG_TABLE = "Messbetrag", MESSBETRAG_SQUAREMETER = "Quadratmeter", MESSBETRAG_VALUE = "Messbetrag";
     String MESSBETRAG_YEAR = "Jahr";
-    
+
     /**
      * Hebesatz
      */
     String HEBESATZ_TABLE = "Hebesatz", HEBESATZ_YEAR = "Jahr", HEBESATZ_VALUE = "Hebesatz";
-    
+
     /**
      * names for meter
      */
@@ -257,17 +257,17 @@ public interface DbNames {
     /**
      * Kabel Bereitstellungsgeuehr
      */
-    String PROVIDINGFEE_TABLE= "BereitstellungKabel";
+    String PROVIDINGFEE_TABLE = "BereitstellungKabel";
     String PROVIDINGFEE_ID = "ID_KabelBereitstellung";
     String PROVIDINGFEE_TENANT = "ID_Mieter";
-    String PROVIDINGFEE_YEAR= "Jahr";
+    String PROVIDINGFEE_YEAR = "Jahr";
     String PROVIDINGFEE_VALUE = "Betrag";
-    
+
     String HOUSESUPPLY_TABLE = "Hausverteilungsanlage", HOUSESUPPLY_ID = "ID_Hausverteilungsanlage";
     String HOUSESUPPLY_TENANT = "ID_Mieter";
     String HOUSESUPPLY_YEAR = "Jahr";
     String HOUSESUPPLY_VALUE = "Betrag";
-    
+
     /**
      * names for hot water
      */
@@ -375,14 +375,14 @@ public interface DbNames {
      * Heater
      */
     String HEATER_TABLE = "Heizkosten";
-    /**
-     * Heater
-     */
-    String HEATER_TENANT = "Mieter";
+    String PREPAYED_HEATER_TABLE = "VorkasseHeizkosten";
     /**
      * Heater
      */
     String HEATER_YEAR = "Abrechnungsjahr";
+    String HEATER_TENANT = "Mieter";
+    String PREPAYED_HEATER_TENANT = HEATER_TENANT, PREPAYED_HEATER_YEAR = HEATER_YEAR,
+	    PREPAYED_HEATER_PAYED = HEATER_COST;
 
     /**
      * Base Tax
