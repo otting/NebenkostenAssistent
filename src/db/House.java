@@ -198,7 +198,7 @@ public class House implements DbNames, LoadAble {
     }
 
     public double getInsuranceCost(int year) {
-	return getInsurance(year) * getShare() / getTotalShares(year);
+	return getInsurance(year);
     }
 
     public double getCommonElectricCost(int year) {
