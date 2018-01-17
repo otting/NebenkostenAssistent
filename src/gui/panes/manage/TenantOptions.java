@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
@@ -16,11 +15,13 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import db.Tenant;
+import db.Tenant.Result;
 import db.input.TenantInput;
 import db.util.PersonCount;
 import gui.ErrorHandle;
@@ -40,7 +41,7 @@ public class TenantOptions extends JPanel implements ActionListener {
     private JFormattedTextField txtName;
     private JSpinner auszugDatum, moveIn;
     private JFormattedTextField rent;
-    private JSpinner rentDate;
+    private JSpinner mainDate;
     private JLabel lblPersonenzahl;
     private JFormattedTextField persoZahl;
     private JLabel lblEinzahlung;
@@ -65,8 +66,8 @@ public class TenantOptions extends JPanel implements ActionListener {
     public TenantOptions(ManagePane mp) {
 	parent = mp;
 	Calendar cal = Calendar.getInstance();
-	setLayout(new MigLayout("", "[121px][139px,grow][95px]",
-		"[20px][20px][20px][][][20px][20px][20px][][23px][23px][][][]"));
+	setLayout(new MigLayout("", "[121px][217.00px,grow][]",
+		"[20px][20px][20px][][][20px][20px][20px][][23px][23px][][][20px][][]"));
 
 	lblName = new JLabel("Name:");
 	add(lblName, "cell 0 0,alignx right,aligny center");
@@ -100,24 +101,25 @@ public class TenantOptions extends JPanel implements ActionListener {
 	lblJahr = new JLabel("Jahr:");
 	add(lblJahr, "cell 0 4,alignx right");
 
-	rentDate = new JSpinner(new SpinnerDateModel(new Date(cal.getTimeInMillis()), null, null, Calendar.MONTH));
-	add(rentDate, "cell 1 4,alignx left,aligny center");
-	rentDate.setEditor(new JSpinner.DateEditor(rentDate, "yyyy"));
-	rentDate.addChangeListener(new ChangeListener() {
+	mainDate = new JSpinner(new SpinnerDateModel(new Date(cal.getTimeInMillis()), null, null, Calendar.MONTH));
+	add(mainDate, "cell 1 4,alignx left,aligny center");
+	mainDate.setEditor(new JSpinner.DateEditor(mainDate, "yyyy"));
+	mainDate.addChangeListener(new ChangeListener() {
 	    @Override
 	    public void stateChanged(ChangeEvent e) {
-		Date d = (Date) rentDate.getValue();
-		Calendar cal = new GregorianCalendar();
-		cal.setTime(d);
+		// Date d = (Date) mainDate.getValue();
+		// Calendar cal = new GregorianCalendar();
+		// cal.setTime(d);
 		Tenant t = parent.getTenant();
-		if (t != null && d != null) {
-		    rent.setValue(t.getRent(cal.get(Calendar.YEAR)));
-
-		    einzahlDatum.setValue(rentDate.getValue());
-		    heitzDatum.setValue(rentDate.getValue());
-		    verteilerDatum.setValue(rentDate.getValue());
-		    bereitstellungsDatum.setValue(rentDate.getValue());
-		}
+		initValues(t);
+		// if (t != null && d != null) {
+		// rent.setValue(t.getRent(cal.get(Calendar.YEAR)));
+		//
+		// einzahlDatum.setValue(mainDate.getValue());
+		// heitzDatum.setValue(mainDate.getValue());
+		// verteilerDatum.setValue(mainDate.getValue());
+		// bereitstellungsDatum.setValue(mainDate.getValue());
+		// }
 	    }
 	});
 
@@ -149,7 +151,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 		Date d = (Date) einzahlDatum.getValue();
 		Tenant t = parent.getTenant();
 		if (t != null && d != null)
-		    einzahlung.setValue(t.getBalance(d));
+		    einzahlung.setValue(t.getPayment(d));
 	    }
 	});
 
@@ -175,7 +177,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	prepayedHeater = new JFormattedTextField(NumberFormat.getNumberInstance());
 	prepayedHeater.setText("0");
 	prepayedHeater.setColumns(15);
-	add(prepayedHeater, "cell 1 8,growx");
+	add(prepayedHeater, "cell 1 8,alignx left");
 
 	heitzDatum.addChangeListener(new ChangeListener() {
 
@@ -195,6 +197,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	lblBereitstellungskosten = new JLabel("Kabel Bereitstellungsgeb.");
 	add(lblBereitstellungskosten, "cell 0 9,alignx right,aligny center");
 	bereitstellungsKosten = new JFormattedTextField(NumberFormat.getNumberInstance());
+	bereitstellungsKosten.setText("0");
 	bereitstellungsKosten.setColumns(15);
 	add(bereitstellungsKosten, "cell 1 9,alignx left,aligny center");
 	bereitstellungsDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
@@ -218,6 +221,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	lblVerteilerkosten = new JLabel("Kabel Verteilergeb.");
 	add(lblVerteilerkosten, "cell 0 10,alignx right,aligny center");
 	verteilerKosten = new JFormattedTextField(NumberFormat.getNumberInstance());
+	verteilerKosten.setText("0");
 	verteilerKosten.setColumns(15);
 	add(verteilerKosten, "cell 1 10,alignx left,aligny center");
 	verteilerDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
@@ -237,6 +241,47 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    }
 	});
 
+	lblModernisierung = new JLabel("Modernisierung:");
+	add(lblModernisierung, "cell 0 11,alignx trailing");
+
+	panel = new JPanel();
+	add(panel, "cell 1 11,alignx left,growy");
+	panel.setLayout(new MigLayout("", "[][]", "[20px]"));
+
+	modernisierung = new JFormattedTextField(NumberFormat.getNumberInstance());
+	modernisierung.setText("0");
+	panel.add(modernisierung, "cell 0 0,alignx left,aligny top");
+	modernisierung.setColumns(15);
+
+	txtDescModern = new JTextField();
+	panel.add(txtDescModern, "cell 1 0,alignx left,aligny top");
+	txtDescModern.setText("Beschreibung");
+	txtDescModern.setColumns(20);
+
+	lblSonstige = new JLabel("Sonstige:");
+	add(lblSonstige, "cell 0 12,alignx trailing");
+
+	panel_1 = new JPanel();
+	add(panel_1, "cell 1 12,grow");
+	panel_1.setLayout(new MigLayout("", "[][]", "[20px]"));
+
+	sonstigeKosten = new JFormattedTextField(NumberFormat.getNumberInstance());
+	panel_1.add(sonstigeKosten, "cell 0 0,alignx left");
+	sonstigeKosten.setColumns(15);
+	sonstigeKosten.setText("0");
+
+	txtDescSonstige = new JTextField();
+	panel_1.add(txtDescSonstige, "cell 1 0,alignx left");
+	txtDescSonstige.setText("Beschreibung");
+	txtDescSonstige.setColumns(20);
+
+	lblNichtFestgelegt = new JLabel("NICHT FESTGELEGT");
+	add(lblNichtFestgelegt, "cell 1 2,alignx center,aligny center");
+
+	persoDatum = new JSpinner(new SpinnerDateModel(new Date(1460671200000L), null, null, Calendar.MONTH));
+	persoDatum.setEditor(new JSpinner.DateEditor(persoDatum, "dd.MM.yyyy"));
+	add(persoDatum, "cell 1 3,alignx left,aligny center");
+
 	// Buttons save / neuer mieter
 
 	JButton btnNeuerMieter = new JButton("Neuen Mieter Anlegen");
@@ -255,15 +300,8 @@ public class TenantOptions extends JPanel implements ActionListener {
 
 	btnSpeichern = new JButton("Speichern");
 	btnSpeichern.addActionListener(this);
-	add(btnSpeichern, "cell 1 12,alignx left,aligny center");
-	add(btnNeuerMieter, "cell 1 13,alignx left,aligny center");
-
-	lblNichtFestgelegt = new JLabel("NICHT FESTGELEGT");
-	add(lblNichtFestgelegt, "cell 1 2,alignx center,aligny center");
-
-	persoDatum = new JSpinner(new SpinnerDateModel(new Date(1460671200000L), null, null, Calendar.MONTH));
-	persoDatum.setEditor(new JSpinner.DateEditor(persoDatum, "dd.MM.yyyy"));
-	add(persoDatum, "cell 1 3,alignx left,aligny center");
+	add(btnSpeichern, "cell 1 14,alignx left,aligny center");
+	add(btnNeuerMieter, "cell 1 15,alignx left,aligny center");
 	lblNichtFestgelegt.setVisible(showNotNeeded);
 	clear();
 
@@ -291,7 +329,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    return;
 	}
 	Calendar cal = Calendar.getInstance();
-
+	// Ein und Auszug
 	moveIn.setValue(t.getMoveIn());
 	Date d = t.getMoveOut();
 	if (d.getTime() != Long.MAX_VALUE)
@@ -300,13 +338,12 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    auszugDatum.setValue(cal.getTime());
 	}
 	lblNichtFestgelegt.setVisible((d.getTime() == Long.MAX_VALUE));
+	txtName.setValue(t.getName());
 
-	cal.setTime((Date) rentDate.getValue());
+	// Werte
+	cal.setTime((Date) mainDate.getValue());
 	int year = cal.get(Calendar.YEAR);
 
-	txtName.setValue(t.getName());
-	rent.setValue(t.getRent(year));
-	cal = Calendar.getInstance();
 	PersonCount pc = t.getPersonCount();
 	try {
 	    persoZahl.setValue(pc.getLast());
@@ -316,17 +353,22 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    System.err.println("Person count 0");
 	    persoDatum.setValue(new Date(0));
 	}
-
-	cal.setTime((Date) rentDate.getValue());
-	einzahlung.setValue(t.getBalance(cal.getTime()));
+	rent.setValue(t.getRent(year));
+	einzahlung.setValue(t.getPayment(cal.getTime()));
 	einzahlDatum.setValue(cal.getTime());
 	heitzDatum.setValue(cal.getTime());
-	heitzKosten.setValue(t.getHeaterCost(cal.get(Calendar.YEAR)));
-	prepayedHeater.setValue(t.getPrepayedHeaterCost(cal.get(Calendar.YEAR)));
+	heitzKosten.setValue(t.getHeaterCost(year));
+	prepayedHeater.setValue(t.getPrepayedHeaterCost(year));
 	bereitstellungsDatum.setValue(cal.getTime());
-	bereitstellungsKosten.setValue(t.getCableProvidingCost(cal.get(Calendar.YEAR)));
+	bereitstellungsKosten.setValue(t.getCableProvidingCost(year));
 	verteilerDatum.setValue(cal.getTime());
-	verteilerKosten.setValue(t.getHouseCableSupplyCost(cal.get(Calendar.YEAR)));
+	verteilerKosten.setValue(t.getHouseCableSupplyCost(year));
+	Result sonstige = t.getSonstige(year);
+	sonstigeKosten.setValue(sonstige.value);
+	txtDescSonstige.setText(sonstige.description);
+	Result modern = t.getModernisierung(year);
+	modernisierung.setValue(modern.value);
+	txtDescModern.setText(modern.description);
 
 	saveOldValues();
     }
@@ -359,9 +401,9 @@ public class TenantOptions extends JPanel implements ActionListener {
 	if (changed(auszugDatum)) {
 	    TenantInput.setMoveout(selected, (Date) auszugDatum.getValue());
 	}
-	if (changed(rent) || changed(rentDate)) {
+	if (changed(rent) || changed(mainDate)) {
 	    value = Double.parseDouble(rent.getText().replace(".", "").replace(",", "."));
-	    parent.setRent(value, (Date) rentDate.getValue());
+	    parent.setRent(value, (Date) mainDate.getValue());
 	}
 	if (changed(einzahlung) || changed(einzahlDatum)) {
 	    value = Double.parseDouble(einzahlung.getText().replace(".", "").replace(",", "."));
@@ -391,6 +433,16 @@ public class TenantOptions extends JPanel implements ActionListener {
 	if (changed(bereitstellungsDatum) || changed(bereitstellungsKosten)) {
 	    TenantInput.setCableProvidingCost(parent.getTenant(), textToDouble(bereitstellungsKosten.getText()),
 		    (Date) bereitstellungsDatum.getValue());
+	}
+
+	if (changed(sonstigeKosten) || changed(txtDescSonstige)) {
+	    TenantInput.setSonstigeKosten(parent.getTenant(), textToDouble(sonstigeKosten.getText()),
+		    (Date) heitzDatum.getValue(), txtDescSonstige.getText());
+	}
+
+	if (changed(modernisierung) || changed(txtDescModern)) {
+	    TenantInput.setModernisierungsKosten(parent.getTenant(), textToDouble(modernisierung.getText()),
+		    (Date) heitzDatum.getValue(), txtDescModern.getText());
 	}
 	int index = parent.getTenantIndex();
 	parent.refreshTenant();
@@ -435,28 +487,21 @@ public class TenantOptions extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * Accepts JSpinner, JFormattedTextField and JTextfield
+     * 
+     * @param c
+     * @return value as String
+     */
     private String getValue(Component c) {
 	String value = null;
 	if (c instanceof JSpinner)
-	    value = getValue((JSpinner) c);
+	    value = ((JSpinner) c).getValue().toString();
 	else if (c instanceof JFormattedTextField)
-	    value = getValue((JFormattedTextField) c);
-
+	    value = ((JFormattedTextField) c).getValue().toString();
+	else if (c instanceof JTextField)
+	    value = ((JTextField) c).getText();
 	return value;
-    }
-
-    private String getValue(JFormattedTextField x) {
-	if (x.getValue() == null) {
-	    return null;
-	}
-	return x.getValue().toString();
-    }
-
-    private String getValue(JSpinner x) {
-	if (x.getValue() == null) {
-	    return null;
-	}
-	return x.getValue().toString();
     }
 
     private static int nonameIndex = 0;
@@ -464,6 +509,14 @@ public class TenantOptions extends JPanel implements ActionListener {
     private JLabel lblJahr;
     private JLabel lblVorrauszahlungHeizkosten;
     private JFormattedTextField prepayedHeater;
+    private JLabel lblModernisierung;
+    private JLabel lblSonstige;
+    private JFormattedTextField modernisierung;
+    private JFormattedTextField sonstigeKosten;
+    private JTextField txtDescModern;
+    private JTextField txtDescSonstige;
+    private JPanel panel;
+    private JPanel panel_1;
 
     /**
      * puts the name of the component inside oldValues with the linked value as

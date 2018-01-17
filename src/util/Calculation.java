@@ -135,7 +135,7 @@ public class Calculation implements DbNames {
 		b.setHotWater(calcConsumption(tenant, WATER_HOT));
 		b.setHeater(calcConsumption(tenant, HEATER));
 		b.setPersonCount(tenant.getPersonCount(year));
-		b.setBalance(tenant.getBalance(end));
+		b.setBalance(tenant.getPayment(end));
 		b.setRent(tenant.getRent(year));
 		b.setHeater(tenant.getHeaterCost(year));
 		Date begin = start;

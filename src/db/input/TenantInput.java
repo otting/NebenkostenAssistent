@@ -118,4 +118,24 @@ public class TenantInput implements DbNames {
 		value, t.getId(), calendar.get(Calendar.YEAR));
 
     }
+
+    public static void setSonstigeKosten(Tenant t, Double value, Date d, String description) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(d);
+	DbInput.removeRow(SONSTIGE_TABLE, SONSTIGE_TENANT, t.getId(), SONSTIGE_YEAR, calendar.get(Calendar.YEAR));
+	DbInput.addRow(SONSTIGE_TABLE,
+		new String[] { SONSTIGE_VALUE, SONSTIGE_TENANT, SONSTIGE_YEAR, SONSTIGE_DESCRIPTION }, value, t.getId(),
+		calendar.get(Calendar.YEAR), description);
+
+    }
+
+    public static void setModernisierungsKosten(Tenant t, Double value, Date d, String description) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(d);
+	DbInput.removeRow(MODERN_TABLE, MODERN_TENANT, t.getId(), MODERN_YEAR, calendar.get(Calendar.YEAR));
+	DbInput.addRow(MODERN_TABLE, new String[] { MODERN_VALUE, MODERN_TENANT, MODERN_YEAR, MODERN_DESCRIPTION },
+		value, t.getId(), calendar.get(Calendar.YEAR), description);
+
+    }
+
 }

@@ -48,6 +48,8 @@ public class ErrorHandle {
 		e1.printStackTrace();
 	    }
 	}
+
+	e.printStackTrace();
     }
 
     private static void appendText(File f, Exception e) {

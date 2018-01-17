@@ -199,28 +199,17 @@ public class Tenant implements DbNames, Comparable<Tenant>, LoadAble {
 	return val;
     }
 
-    public double getBalance(Date end) {
-	double balance = 0f;
-	Date d = new Date(0);
+    public double getPayment(Date year) {
+	Calendar cal = Calendar.getInstance();
+	cal.setTime(year);
+	int intyear = cal.get(Calendar.YEAR);
 	for (Row r : DbHandle.findAll(TENANT_MONEY_TABLE, TENANT_MONEY_TENANT, id)) {
-	    Date x = r.getDate(TENANT_MONEY_DATE);
-	    if (!x.after(end) && x.after(d)) {
-		d = x;
-		balance = r.getDouble(TENANT_MONEY_MONEY);
+	    cal.setTime(r.getDate(TENANT_MONEY_DATE));
+	    if (intyear == cal.get(Calendar.YEAR)) {
+		return r.getDouble(TENANT_MONEY_MONEY);
 	    }
 	}
-	lastBalance = d;
-	return balance;
-    }
-
-    private Date lastBalance = null;
-
-    /**
-     * 
-     * @return the date of blance last read from the db, null if none was read yet
-     */
-    public Date getLastBalanceDate() {
-	return lastBalance;
+	return 0.0;
     }
 
     public double getHeaterCost(int year) {
@@ -377,5 +366,40 @@ public class Tenant implements DbNames, Comparable<Tenant>, LoadAble {
 	else {
 	    return found.get(0).getDouble(PREPAYED_HEATER_PAYED);
 	}
+    }
+
+    public class Result {
+	public String description;
+	public double value;
+
+	public Result(String s, double v) {
+	    description = s;
+	    value = v;
+	}
+
+	public Result() {
+	    description = "Keine";
+	    value = 0.0;
+	}
+    }
+
+    public Result getSonstige(int year) {
+	Row r = DbHandle.findUnique(SONSTIGE_TABLE, SONSTIGE_TENANT, getId(), SONSTIGE_YEAR, year);
+
+	if (r != null) {
+	    return new Result(r.getString(SONSTIGE_DESCRIPTION), r.getDouble(SONSTIGE_VALUE));
+	}
+	return new Result();
+
+    }
+
+    public Result getModernisierung(int year) {
+	Row r = DbHandle.findUnique(MODERN_TABLE, MODERN_TENANT, getId(), MODERN_YEAR, year);
+
+	if (r != null) {
+	    return new Result(r.getString(MODERN_DESCRIPTION), r.getDouble(MODERN_VALUE));
+	}
+	return new Result();
+
     }
 }

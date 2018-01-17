@@ -423,4 +423,11 @@ public interface DbNames {
     String STELLP_EXTERN_TABLE = "StellplatzExternerVertrag", STELLP_EXTERN_ID = "ID_ExternerVertrag",
 	    STELLP_EXTERN_STELLPLATZ = "ID_Stellplatz", STELLP_EXTERN_TENANT = "Mieter", STELLP_EXTERN_START = "Start",
 	    STELLP_EXTERN_RENT = "Miete";
+
+    String SONSTIGE_TABLE = "Sonstige_Kosten", SONSTIGE_ID = "ID_sonstige", SONSTIGE_TENANT = "Mieter",
+	    SONSTIGE_VALUE = "Betrag", SONSTIGE_YEAR = "Jahr", SONSTIGE_DESCRIPTION = "Bezeichnung";
+
+    String MODERN_TABLE = "Modernisierung", MODERN_ID = "ID_modern", MODERN_TENANT = "Mieter", MODERN_VALUE = "Betrag",
+	    MODERN_YEAR = "Jahr", MODERN_DESCRIPTION = "Bezeichnung";
+
 }

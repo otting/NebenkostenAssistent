@@ -9,6 +9,7 @@ import javax.naming.directory.InvalidAttributesException;
 
 import db.Garage;
 import db.House;
+import db.Tenant;
 import gui.ErrorHandle;
 
 public class ExcelExport {
@@ -61,6 +62,7 @@ public class ExcelExport {
     private static void exportBill(ExcelHandle exl, TenantBill b, int year) throws InterruptedException {
 	exl.selectLastSheet();
 	exl.cloneLastSheet();
+	Tenant t = b.getTenant();
 	exl.renameSelectedSheet(b.getTenant().getName());
 	exl.replace("*NAME*", b.getTenant().getName());
 	exl.replace("*WOHNUNG*", b.getFlat().toString());
@@ -76,6 +78,10 @@ public class ExcelExport {
 	exl.replace("*START*", b.getStart());
 	exl.replace("*ENDE*", b.getEnd());
 	exl.replace("*GRUNDWOHNUNG*", b.getFlat().getGrundsteuer(year));
+	exl.replace("*MODBESCHREIBUNG*", t.getModernisierung(year).description);
+	exl.replace("*MODERN*", t.getModernisierung(year).value);
+	exl.replace("*SONSTBESCHREIBUNG*", t.getSonstige(year).description);
+	exl.replace("*SONSTIGE*", t.getSonstige(year).value);
 
 	exl.replace("*MIETE*", b.getTenant().getRent(year));
 	Calendar cal = Calendar.getInstance();
@@ -100,21 +106,21 @@ public class ExcelExport {
 	    exl.replace("*STELLP*", 0);
 	    exl.replace("*STELLPANZ*", 0);
 	    exl.replace("*NEXTSTELLPRENT*", 0);
-	    return;
+	} else {
+	    // Kabel Extra Kosten
+	    exl.replace("*BEREITSTELLUNG*", b.getTenant().getCableProvidingCost(year));
+	    exl.replace("*HAUSVERTEILUNG*", b.getTenant().getHouseCableSupplyCost(year));
+
+	    // Garage
+	    exl.replace("*GARAGECOUNT*", b.getTenant().getGarageUsage(year));
+	    exl.replace("*GARAGE*", b.getTenant().getGarageRent(year));
+	    exl.replace("*NEXTGARAGERENT*", b.getTenant().getFutureGarageRent(year));
+
+	    // Stellplatz
+	    exl.replace("*STELLP*", b.getTenant().getStellPRent(year));
+	    exl.replace("*STELLPANZ*", b.getTenant().getStellPUsage(year));
+	    exl.replace("*NEXTSTELLPRENT*", b.getTenant().getFutureStellPRent(year));
 	}
-	// Kabel Extra Kosten
-	exl.replace("*BEREITSTELLUNG*", b.getTenant().getCableProvidingCost(year));
-	exl.replace("*HAUSVERTEILUNG*", b.getTenant().getHouseCableSupplyCost(year));
-
-	// Garage
-	exl.replace("*GARAGECOUNT*", b.getTenant().getGarageUsage(year));
-	exl.replace("*GARAGE*", b.getTenant().getGarageRent(year));
-	exl.replace("*NEXTGARAGERENT*", b.getTenant().getFutureGarageRent(year));
-
-	// Stellplatz
-	exl.replace("*STELLP*", b.getTenant().getStellPRent(year));
-	exl.replace("*STELLPANZ*", b.getTenant().getStellPUsage(year));
-	exl.replace("*NEXTSTELLPRENT*", b.getTenant().getFutureStellPRent(year));
     }
 
     private static void exportHouseInfo(ExcelHandle exl, HouseBill b, int year)
