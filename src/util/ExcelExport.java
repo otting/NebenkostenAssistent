@@ -54,45 +54,45 @@ public class ExcelExport {
      * exports the values of a Bill into the excel sheet
      * 
      * @param exl
-     * @param b
+     * @param bill
      * @param year
      * @throws InterruptedException
      * @throws Exception
      */
-    private static void exportBill(ExcelHandle exl, TenantBill b, int year) throws InterruptedException {
+    private static void exportBill(ExcelHandle exl, TenantBill bill, int year) throws InterruptedException {
 	exl.selectLastSheet();
 	exl.cloneLastSheet();
-	Tenant t = b.getTenant();
-	exl.renameSelectedSheet(b.getTenant().getName());
-	exl.replace("*NAME*", b.getTenant().getName());
-	exl.replace("*WOHNUNG*", b.getFlat().toString());
-	exl.replace("*QM*", b.getSquareMeter());
-	exl.replace("*WANTEIL*", b.getFlat().getShare());
-	exl.replace("*PERSO_ZAHL*", b.getPersonCount());
+	Tenant tenant = bill.getTenant();
+	exl.renameSelectedSheet(tenant.getName());
+	exl.replace("*NAME*", tenant.getName());
+	exl.replace("*WOHNUNG*", bill.getFlat().toString());
+	exl.replace("*QM*", bill.getSquareMeter());
+	exl.replace("*WANTEIL*", bill.getFlat().getShare());
+	exl.replace("*PERSO_ZAHL*", bill.getPersonCount());
 	exl.replace("*JAHR*", year);
-	exl.replace("*WASSER_KALT*", b.getColdWater());
-	exl.replace("*WASSER_WARM*", b.getHotWater());
-	exl.replace("*GEZAHLT*", b.getBalance());
-	exl.replace("*HEIZUNG*", b.getHeater());
-	exl.replace("*PRE_Heizung*", b.getTenant().getPrepayedHeaterCost(year));
-	exl.replace("*START*", b.getStart());
-	exl.replace("*ENDE*", b.getEnd());
-	exl.replace("*GRUNDWOHNUNG*", b.getFlat().getGrundsteuer(year));
-	exl.replace("*MODBESCHREIBUNG*", t.getModernisierung(year).description);
-	exl.replace("*MODERN*", t.getModernisierung(year).value);
-	exl.replace("*SONSTBESCHREIBUNG*", t.getSonstige(year).description);
-	exl.replace("*SONSTIGE*", t.getSonstige(year).value);
+	exl.replace("*WASSER_KALT*", bill.getColdWater());
+	exl.replace("*WASSER_WARM*", bill.getHotWater());
+	exl.replace("*GEZAHLT*", bill.getBalance());
+	exl.replace("*HEIZUNG*", bill.getHeater());
+	exl.replace("*PRE_Heizung*", tenant.getPrepayedHeaterCost(year));
+	exl.replace("*START*", bill.getStart());
+	exl.replace("*ENDE*", bill.getEnd());
+	exl.replace("*GRUNDWOHNUNG*", bill.getFlat().getGrundsteuer(year));
+	exl.replace("*MODBESCHREIBUNG*", tenant.getModernisierung(year).description);
+	exl.replace("*MODERN*", tenant.getModernisierung(year).value);
+	exl.replace("*SONSTBESCHREIBUNG*", tenant.getSonstige(year).description);
+	exl.replace("*SONSTIGE*", tenant.getSonstige(year).value);
 
-	exl.replace("*MIETE*", b.getTenant().getRent(year));
+	exl.replace("*MIETE*", tenant.getRent(year));
 	Calendar cal = Calendar.getInstance();
 	cal.set(year, 12, 31);
-	exl.replace("*AKTPERSO*", b.getTenant().getPersonCount().getLast());
+	exl.replace("*AKTPERSO*", tenant.getPersonCount().getLast());
 	cal = Calendar.getInstance();
 	cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
 	exl.replace("*NACHZAHLDATUM*", cal.getTime());
 
 	// Leerstand
-	if (b.getTenant().getName().equals("Leerstand")) {
+	if (tenant.getName().equals("Leerstand")) {
 	    // Kabel Extra Kosten
 	    exl.replace("*BEREITSTELLUNG*", 0);
 	    exl.replace("*HAUSVERTEILUNG*", 0);
@@ -108,18 +108,18 @@ public class ExcelExport {
 	    exl.replace("*NEXTSTELLPRENT*", 0);
 	} else {
 	    // Kabel Extra Kosten
-	    exl.replace("*BEREITSTELLUNG*", b.getTenant().getCableProvidingCost(year));
-	    exl.replace("*HAUSVERTEILUNG*", b.getTenant().getHouseCableSupplyCost(year));
+	    exl.replace("*BEREITSTELLUNG*", tenant.getCableProvidingCost(year));
+	    exl.replace("*HAUSVERTEILUNG*", tenant.getHouseCableSupplyCost(year));
 
 	    // Garage
-	    exl.replace("*GARAGECOUNT*", b.getTenant().getGarageUsage(year));
-	    exl.replace("*GARAGE*", b.getTenant().getGarageRent(year));
-	    exl.replace("*NEXTGARAGERENT*", b.getTenant().getFutureGarageRent(year));
+	    exl.replace("*GARAGECOUNT*", tenant.getGarageUsage(year));
+	    exl.replace("*GARAGE*", tenant.getGarageRent(year));
+	    exl.replace("*NEXTGARAGERENT*", tenant.getFutureGarageRent(year));
 
 	    // Stellplatz
-	    exl.replace("*STELLP*", b.getTenant().getStellPRent(year));
-	    exl.replace("*STELLPANZ*", b.getTenant().getStellPUsage(year));
-	    exl.replace("*NEXTSTELLPRENT*", b.getTenant().getFutureStellPRent(year));
+	    exl.replace("*STELLP*", tenant.getStellPRent(year));
+	    exl.replace("*STELLPANZ*", tenant.getStellPUsage(year));
+	    exl.replace("*NEXTSTELLPRENT*", tenant.getFutureStellPRent(year));
 	}
     }
 

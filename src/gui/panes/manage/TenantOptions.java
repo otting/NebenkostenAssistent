@@ -43,20 +43,16 @@ public class TenantOptions extends JPanel implements ActionListener {
     private JFormattedTextField rent;
     private JSpinner mainDate;
     private JLabel lblPersonenzahl;
+    private JSpinner persoDatum;
     private JFormattedTextField persoZahl;
     private JLabel lblEinzahlung;
     private JFormattedTextField einzahlung;
-    private JSpinner persoDatum;
-    private JSpinner einzahlDatum;
     private JLabel lblHeitzkosten;
     private JFormattedTextField heitzKosten;
-    private JSpinner heitzDatum;
     private JLabel lblBereitstellungskosten;
     private JFormattedTextField bereitstellungsKosten;
-    private JSpinner bereitstellungsDatum;
     private JLabel lblVerteilerkosten;
     private JFormattedTextField verteilerKosten;
-    private JSpinner verteilerDatum;
     private JLabel lblAuszugDatum;
     private JLabel lblNichtFestgelegt;
     private JLabel lblKaltmietemonatlich;
@@ -66,7 +62,7 @@ public class TenantOptions extends JPanel implements ActionListener {
     public TenantOptions(ManagePane mp) {
 	parent = mp;
 	Calendar cal = Calendar.getInstance();
-	setLayout(new MigLayout("", "[121px][217.00px,grow][]",
+	setLayout(new MigLayout("", "[121px][217.00px,grow]",
 		"[20px][20px][20px][][][20px][20px][20px][][23px][23px][][][20px][][]"));
 
 	lblName = new JLabel("Name:");
@@ -107,19 +103,9 @@ public class TenantOptions extends JPanel implements ActionListener {
 	mainDate.addChangeListener(new ChangeListener() {
 	    @Override
 	    public void stateChanged(ChangeEvent e) {
-		// Date d = (Date) mainDate.getValue();
-		// Calendar cal = new GregorianCalendar();
-		// cal.setTime(d);
 		Tenant t = parent.getTenant();
 		initValues(t);
-		// if (t != null && d != null) {
-		// rent.setValue(t.getRent(cal.get(Calendar.YEAR)));
-		//
-		// einzahlDatum.setValue(mainDate.getValue());
-		// heitzDatum.setValue(mainDate.getValue());
-		// verteilerDatum.setValue(mainDate.getValue());
-		// bereitstellungsDatum.setValue(mainDate.getValue());
-		// }
+
 	    }
 	});
 
@@ -139,22 +125,6 @@ public class TenantOptions extends JPanel implements ActionListener {
 	einzahlung.setColumns(15);
 	add(einzahlung, "cell 1 6,alignx left,aligny center");
 
-	einzahlDatum = new JSpinner();
-	einzahlDatum.setVisible(showNotNeeded);
-	einzahlDatum.setEnabled(false);
-	einzahlDatum.setModel(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
-	einzahlDatum.setEditor(new JSpinner.DateEditor(einzahlDatum, "yyyy"));
-	add(einzahlDatum, "cell 2 6,alignx left,aligny center");
-	einzahlDatum.addChangeListener(new ChangeListener() {
-	    @Override
-	    public void stateChanged(ChangeEvent e) {
-		Date d = (Date) einzahlDatum.getValue();
-		Tenant t = parent.getTenant();
-		if (t != null && d != null)
-		    einzahlung.setValue(t.getPayment(d));
-	    }
-	});
-
 	// Heizkosten
 
 	lblHeitzkosten = new JLabel("Heitzkosten:");
@@ -165,12 +135,6 @@ public class TenantOptions extends JPanel implements ActionListener {
 	heitzKosten.setColumns(15);
 	add(heitzKosten, "cell 1 7,alignx left,aligny center");
 
-	heitzDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
-	heitzDatum.setVisible(showNotNeeded);
-	heitzDatum.setEnabled(false);
-	heitzDatum.setEditor(new JSpinner.DateEditor(heitzDatum, "yyyy"));
-	add(heitzDatum, "cell 2 7,alignx left,aligny center");
-
 	lblVorrauszahlungHeizkosten = new JLabel("Vorrauszahlung Heizkosten:");
 	add(lblVorrauszahlungHeizkosten, "cell 0 8,alignx right,aligny center");
 
@@ -178,19 +142,6 @@ public class TenantOptions extends JPanel implements ActionListener {
 	prepayedHeater.setText("0");
 	prepayedHeater.setColumns(15);
 	add(prepayedHeater, "cell 1 8,alignx left");
-
-	heitzDatum.addChangeListener(new ChangeListener() {
-
-	    @Override
-	    public void stateChanged(ChangeEvent e) {
-		if (selected != null) {
-		    Calendar cal = Calendar.getInstance();
-		    cal.setTime((Date) heitzDatum.getValue());
-		    heitzKosten.setValue(selected.getHeaterCost(cal.get(Calendar.YEAR)));
-		    prepayedHeater.setValue(selected.getPrepayedHeaterCost(cal.get(Calendar.YEAR)));
-		}
-	    }
-	});
 
 	// Kabel Bereitstellung
 
@@ -200,22 +151,6 @@ public class TenantOptions extends JPanel implements ActionListener {
 	bereitstellungsKosten.setText("0");
 	bereitstellungsKosten.setColumns(15);
 	add(bereitstellungsKosten, "cell 1 9,alignx left,aligny center");
-	bereitstellungsDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
-	bereitstellungsDatum.setVisible(showNotNeeded);
-	bereitstellungsDatum.setEnabled(false);
-	bereitstellungsDatum.setEditor(new JSpinner.DateEditor(bereitstellungsDatum, "yyyy"));
-	add(bereitstellungsDatum, "cell 2 9,alignx left,aligny center");
-	bereitstellungsDatum.addChangeListener(new ChangeListener() {
-
-	    @Override
-	    public void stateChanged(ChangeEvent e) {
-		if (selected != null) {
-		    Calendar cal = Calendar.getInstance();
-		    cal.setTime((Date) bereitstellungsDatum.getValue());
-		    bereitstellungsKosten.setValue(selected.getCableProvidingCost(cal.get(Calendar.YEAR)));
-		}
-	    }
-	});
 	// Kabel Verteiler
 
 	lblVerteilerkosten = new JLabel("Kabel Verteilergeb.");
@@ -224,22 +159,6 @@ public class TenantOptions extends JPanel implements ActionListener {
 	verteilerKosten.setText("0");
 	verteilerKosten.setColumns(15);
 	add(verteilerKosten, "cell 1 10,alignx left,aligny center");
-	verteilerDatum = new JSpinner(new SpinnerDateModel(cal.getTime(), null, null, Calendar.MONTH));
-	verteilerDatum.setEnabled(false);
-	verteilerDatum.setVisible(showNotNeeded);
-	verteilerDatum.setEditor(new JSpinner.DateEditor(verteilerDatum, "yyyy"));
-	add(verteilerDatum, "cell 2 10,alignx left,aligny center");
-	verteilerDatum.addChangeListener(new ChangeListener() {
-
-	    @Override
-	    public void stateChanged(ChangeEvent e) {
-		if (selected != null) {
-		    Calendar cal = Calendar.getInstance();
-		    cal.setTime((Date) verteilerDatum.getValue());
-		    verteilerKosten.setValue(selected.getHouseCableSupplyCost(cal.get(Calendar.YEAR)));
-		}
-	    }
-	});
 
 	lblModernisierung = new JLabel("Modernisierung:");
 	add(lblModernisierung, "cell 0 11,alignx trailing");
@@ -281,7 +200,6 @@ public class TenantOptions extends JPanel implements ActionListener {
 	persoDatum = new JSpinner(new SpinnerDateModel(new Date(1460671200000L), null, null, Calendar.MONTH));
 	persoDatum.setEditor(new JSpinner.DateEditor(persoDatum, "dd.MM.yyyy"));
 	add(persoDatum, "cell 1 3,alignx left,aligny center");
-
 	// Buttons save / neuer mieter
 
 	JButton btnNeuerMieter = new JButton("Neuen Mieter Anlegen");
@@ -341,7 +259,7 @@ public class TenantOptions extends JPanel implements ActionListener {
 	txtName.setValue(t.getName());
 
 	// Werte
-	cal.setTime((Date) mainDate.getValue());
+	cal.setTime((Date) getDate());
 	int year = cal.get(Calendar.YEAR);
 
 	PersonCount pc = t.getPersonCount();
@@ -355,13 +273,9 @@ public class TenantOptions extends JPanel implements ActionListener {
 	}
 	rent.setValue(t.getRent(year));
 	einzahlung.setValue(t.getPayment(cal.getTime()));
-	einzahlDatum.setValue(cal.getTime());
-	heitzDatum.setValue(cal.getTime());
 	heitzKosten.setValue(t.getHeaterCost(year));
 	prepayedHeater.setValue(t.getPrepayedHeaterCost(year));
-	bereitstellungsDatum.setValue(cal.getTime());
 	bereitstellungsKosten.setValue(t.getCableProvidingCost(year));
-	verteilerDatum.setValue(cal.getTime());
 	verteilerKosten.setValue(t.getHouseCableSupplyCost(year));
 	Result sonstige = t.getSonstige(year);
 	sonstigeKosten.setValue(sonstige.value);
@@ -401,14 +315,13 @@ public class TenantOptions extends JPanel implements ActionListener {
 	if (changed(auszugDatum)) {
 	    TenantInput.setMoveout(selected, (Date) auszugDatum.getValue());
 	}
-	if (changed(rent) || changed(mainDate)) {
-	    value = Double.parseDouble(rent.getText().replace(".", "").replace(",", "."));
-	    parent.setRent(value, (Date) mainDate.getValue());
+	if (changed(rent)) {
+	    value = textToDouble(rent.getText());
+	    parent.setRent(value, (Date) getDate());
 	}
-	if (changed(einzahlung) || changed(einzahlDatum)) {
-	    value = Double.parseDouble(einzahlung.getText().replace(".", "").replace(",", "."));
-	    System.out.println("saved einzahlung " + einzahlDatum.getValue());
-	    parent.setPayment(value, (Date) einzahlDatum.getValue());
+	if (changed(einzahlung)) {
+	    value = textToDouble(einzahlung.getText());
+	    parent.setPayment(value, (Date) getDate());
 	}
 
 	if (changed(persoZahl) || changed(persoDatum)) {
@@ -416,38 +329,42 @@ public class TenantOptions extends JPanel implements ActionListener {
 	    parent.setPersonCount(x, (Date) persoDatum.getValue());
 	}
 
-	if (changed(heitzKosten) || changed(heitzDatum)) {
+	if (changed(heitzKosten)) {
 	    value = textToDouble(heitzKosten.getText());
-	    parent.setHeatCost(value, (Date) heitzDatum.getValue());
+	    parent.setHeatCost(value, (Date) getDate());
 	}
 
 	if (changed(prepayedHeater)) {
 	    value = textToDouble(prepayedHeater.getText());
-	    TenantInput.setPrepayedHeatCost(selected, value, (Date) heitzDatum.getValue());
+	    TenantInput.setPrepayedHeatCost(selected, value, (Date) getDate());
 	}
-	if (changed(verteilerDatum) || changed(verteilerKosten)) {
+	if (changed(verteilerKosten)) {
 	    TenantInput.setCableSupplyCost(parent.getTenant(), textToDouble(verteilerKosten.getText()),
-		    (Date) verteilerDatum.getValue());
+		    (Date) mainDate.getValue());
 	}
 
-	if (changed(bereitstellungsDatum) || changed(bereitstellungsKosten)) {
+	if (changed(bereitstellungsKosten)) {
 	    TenantInput.setCableProvidingCost(parent.getTenant(), textToDouble(bereitstellungsKosten.getText()),
-		    (Date) bereitstellungsDatum.getValue());
+		    (Date) mainDate.getValue());
 	}
 
 	if (changed(sonstigeKosten) || changed(txtDescSonstige)) {
-	    TenantInput.setSonstigeKosten(parent.getTenant(), textToDouble(sonstigeKosten.getText()),
-		    (Date) heitzDatum.getValue(), txtDescSonstige.getText());
+	    TenantInput.setSonstigeKosten(parent.getTenant(), textToDouble(sonstigeKosten.getText()), (Date) getDate(),
+		    txtDescSonstige.getText());
 	}
 
 	if (changed(modernisierung) || changed(txtDescModern)) {
 	    TenantInput.setModernisierungsKosten(parent.getTenant(), textToDouble(modernisierung.getText()),
-		    (Date) heitzDatum.getValue(), txtDescModern.getText());
+		    (Date) getDate(), txtDescModern.getText());
 	}
 	int index = parent.getTenantIndex();
 	parent.refreshTenant();
 	parent.setTenantIndex(index);
 
+    }
+
+    private Date getDate() {
+	return (Date) mainDate.getValue();
     }
 
     private boolean changed(Component c) {
