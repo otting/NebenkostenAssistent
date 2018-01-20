@@ -111,7 +111,7 @@ public class GarageTenant implements DbNames, Comparable<GarageTenant> {
     private static long time = 0;
 
     private static HashMap<Integer, LinkedList<GarageTenant>> loadRelevantContracts(int year) {
-
+	// only recalculate relevant data every 10 seconds
 	if (relevant != null) {
 	    if (System.currentTimeMillis() - time < 10000) {
 		return relevant;
@@ -141,7 +141,8 @@ public class GarageTenant implements DbNames, Comparable<GarageTenant> {
 	Calendar cal = Calendar.getInstance();
 	Date lastRelevant = new Date(0);
 	Row lastRelevantRow = null;
-	for (Row r : DbHandle.findAll(GARAGE_CONTRACT_TABLE, GARAGE_CONTRACT_GARAGE, g.getId())) {
+	LinkedList<Row> rows = DbHandle.findAll(GARAGE_CONTRACT_TABLE, GARAGE_CONTRACT_GARAGE, g.getId());
+	for (Row r : rows) {
 	    cal.setTime(r.getDate(GARAGE_CONTRACT_START));
 	    if (cal.get(Calendar.YEAR) < year) {
 		if (cal.getTime().after(lastRelevant)) {
@@ -153,7 +154,9 @@ public class GarageTenant implements DbNames, Comparable<GarageTenant> {
 	    }
 	}
 	boolean externalRelevant = false;
-	for (Row r : DbHandle.findAll(GARAGE_EXTERN_TABLE, GARAGE_EXTERN_GARAGE, g.getId())) {
+	rows = DbHandle.findAll(GARAGE_EXTERN_TABLE, GARAGE_EXTERN_GARAGE, g.getId());
+	for (Row r : rows) {
+	    cal.setTime(r.getDate(GARAGE_EXTERN_DATE));
 	    if (cal.get(Calendar.YEAR) < year) {
 		if (cal.getTime().after(lastRelevant)) {
 		    lastRelevant = cal.getTime();
@@ -164,7 +167,8 @@ public class GarageTenant implements DbNames, Comparable<GarageTenant> {
 		gts.add(fromExternalContractRow(r));
 	    }
 	}
-
+	// decide rather the last relevant entry before the given year is a normal or
+	// external tenant
 	if (lastRelevantRow == null) {
 	    gts.add(new GarageTenant());
 	} else if (externalRelevant) {
