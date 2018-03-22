@@ -152,40 +152,46 @@ public class Calculation implements DbNames {
 	    }
 
 	} catch (InvalidAlgorithmParameterException e) {
-	    ErrorHandle
-		    .popUp("An error occured while calculating data for Flat " + flat + "\nthis flat will be skipped!");
+	    ErrorHandle.popUp("An error occured while calculating data for Flat " + flat
+		    + "\nthis flat will be skipped!\n" + e.getMessage());
 	    e.printStackTrace();
 	}
-	LinkedList<TenantBill> all = emptyFlat(flat);
-	if (!all.isEmpty())
+	LinkedList<TenantBill> emptyPeriods = emptyFlat(flat);
+	if (!emptyPeriods.isEmpty())
 	    bills.addAll(emptyFlat(flat));
 	return bills;
     }
 
+    /**
+     * Generate Bills for empty periods of flats
+     * 
+     * @param flat
+     * @return
+     */
     private static LinkedList<TenantBill> emptyFlat(Flat flat) {
-	int[] pc = new int[12];
+	int[] personCount = new int[12];
 	for (Tenant t : flat.getTenants(start, end)) {
 	    PersonCount perC = t.getPersonCount();
 	    for (int i = 0; i < 12; i++) {
-		pc[i] += perC.getCount(year, i);
+		personCount[i] += perC.getCount(year, i);
 	    }
 	}
 	Calendar start = new GregorianCalendar();
 	Calendar end = new GregorianCalendar();
-	LinkedList<TenantBill> tbs = new LinkedList<TenantBill>();
-
+	LinkedList<TenantBill> tenantBills = new LinkedList<TenantBill>();
+	// generiert leere Wohnungen in Zeitraum ohne mieter
 	for (int i = 0; i < 12; i++) {
-	    if (pc[i] == 0) {
+	    if (personCount[i] == 0) {
 		start.set(year, i, 1);
-		while (pc[i + 1] == 0)
+		while (i + 1 < 12 && personCount[i + 1] == 0)
 		    i++;
 		end.set(year, i, 1);
 		end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
-		tbs.add(generateEmpty(flat, start, end));
+		tenantBills.add(generateEmpty(flat, start, end));
 	    }
 	}
 
-	return tbs;
+	return tenantBills;
     }
 
     private static TenantBill generateEmpty(Flat flat, Calendar from, Calendar to) {
@@ -205,6 +211,7 @@ public class Calculation implements DbNames {
 	    tb.setStart(from.getTime());
 	    tb.setTenant(leer);
 	} catch (InvalidAlgorithmParameterException e) {
+	    ErrorHandle.popUp("Fehler beim erstellen von Leerstand für " + flat + "\n" + e.getMessage());
 	    System.err.println("Error beim Leerstand");
 	    e.printStackTrace();
 	}
@@ -215,6 +222,7 @@ public class Calculation implements DbNames {
     private static double calcConsumption(Tenant tenant, String type) throws InvalidAlgorithmParameterException {
 
 	LinkedList<Meter> meter = tenant.getFlat().getMeter(start, end);
+
 	Iterator<Meter> iter = meter.iterator();
 
 	while (iter.hasNext()) {
@@ -222,7 +230,11 @@ public class Calculation implements DbNames {
 		iter.remove();
 	    }
 	}
-
+	// TODO check heater
+	// if (meter.isEmpty()) {
+	// throw new InvalidAlgorithmParameterException("Keine Zähler Vorhanden für " +
+	// tenant + " Typ:" + type);
+	// }
 	Date s = start;
 	Date e = end;
 

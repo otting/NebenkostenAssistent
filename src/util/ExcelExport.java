@@ -63,7 +63,16 @@ public class ExcelExport {
 	exl.selectLastSheet();
 	exl.cloneLastSheet();
 	Tenant tenant = bill.getTenant();
-	exl.renameSelectedSheet(tenant.getName());
+	try {
+	    exl.renameSelectedSheet(tenant.getName());
+	} catch (Exception e) {
+	    try {
+		exl.renameSelectedSheet(tenant.getName() + (1));
+	    } catch (Exception e2) {
+		throw new InterruptedException("Konnte Worksheet nicht umbennen für " + tenant.getName());
+	    }
+	}
+
 	exl.replace("*NAME*", tenant.getName());
 	exl.replace("*WOHNUNG*", bill.getFlat().toString());
 	exl.replace("*QM*", bill.getSquareMeter());

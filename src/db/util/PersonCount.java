@@ -93,7 +93,7 @@ public class PersonCount implements DbNames {
 	if (!Arrays.equals(countPerMonth, new int[12])) {
 	    return countPerMonth[month];
 	}
-
+	// TODO person count = 0 wenn tag < 15?
 	int lastCount = 0;
 	int lastMonth = 0;
 	int beginMonth = 1;
@@ -102,7 +102,9 @@ public class PersonCount implements DbNames {
 	    if (cal.get(Calendar.YEAR) < year) {
 		lastCount = c.count;
 	    } else if (cal.get(Calendar.YEAR) == year) {
-		beginMonth = (cal.get(Calendar.DAY_OF_MONTH) >= 15) ? 0 : 1;
+		// does not count the month if the entry date is within the first 3 days of a
+		// month
+		beginMonth = (cal.get(Calendar.DAY_OF_MONTH) > 1) ? 0 : 1;
 		markCount(lastMonth, cal.get(Calendar.MONTH) - beginMonth, lastCount);
 		lastMonth = cal.get(Calendar.MONTH) - beginMonth + 1;
 		lastCount = c.count;
@@ -116,7 +118,7 @@ public class PersonCount implements DbNames {
 	    cal.setTime(t.getMoveOut());
 	    if (cal.get(Calendar.YEAR) == year) {
 		to = cal.get(Calendar.MONTH);
-		to -= (cal.get(Calendar.DAY_OF_MONTH) < 15) ? 1 : 0;
+		to -= (cal.get(Calendar.DAY_OF_MONTH) < 2) ? 1 : 0;
 	    }
 	    markCount(lastMonth, to, lastCount);
 	}

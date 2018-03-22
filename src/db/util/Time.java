@@ -15,6 +15,9 @@ public class Time {
 	return Math.round((time / (1000 * 60 * 60 * 24)));
     }
 
+    /*
+     * Returns absolute time between date a and b in milliseconds
+     */
     public static long between(Date a, Date b) {
 	long x = a.getTime() - b.getTime();
 	return (x < 0) ? -x : x;

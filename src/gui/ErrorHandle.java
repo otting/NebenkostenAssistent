@@ -44,7 +44,6 @@ public class ErrorHandle {
 	    try {
 		write(new BufferedWriter(new FileWriter(f)), e);
 	    } catch (IOException e1) {
-		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	    }
 	}
@@ -57,7 +56,6 @@ public class ErrorHandle {
 	    BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
 	    write(writer, e);
 	} catch (IOException ex) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 
@@ -71,13 +69,11 @@ public class ErrorHandle {
 		writer.write(st.toString() + "\n");
 	    }
 	} catch (IOException e1) {
-	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
 	} finally {
 	    try {
 		writer.close();
 	    } catch (IOException e1) {
-		// TODO Auto-generated catch block
 		e1.printStackTrace();
 	    }
 	}

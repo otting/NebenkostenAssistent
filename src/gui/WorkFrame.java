@@ -112,7 +112,6 @@ public class WorkFrame extends JFrame {
 	    fileOut.close();
 
 	} catch (IOException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 
@@ -145,7 +144,6 @@ public class WorkFrame extends JFrame {
 	    }
 	    read.close();
 	} catch (IOException | ParseException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 

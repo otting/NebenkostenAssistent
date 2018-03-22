@@ -98,7 +98,10 @@ public class Meter implements DbNames, Comparable<Meter>, LoadAble {
      */
     public static double calcConsumption(LinkedList<Meter> meter, Date start, Date end)
 	    throws InvalidAlgorithmParameterException {
-
+	// TODO delete test
+	if (!meter.isEmpty() && meter.getFirst().toString().contains("Og")) {
+	    System.out.println("");
+	}
 	Collections.sort(meter);
 	Date begin = start;
 	double sum = 0f;
@@ -114,7 +117,6 @@ public class Meter implements DbNames, Comparable<Meter>, LoadAble {
 		sum += m.calcConsumption(start, end);
 	    }
 	}
-
 	return sum;
     }
 
@@ -155,8 +157,11 @@ public class Meter implements DbNames, Comparable<Meter>, LoadAble {
 	Row first = getClosestValue(start, null);
 	Date one = first.getDate(METER_VALUES_DATE);
 	Row last = getClosestValue(end, one);
-
-	if (first == null || last == null || first.equals(last) || start.after(end)) {
+	if (first == last) {
+	    first = getClosestValue(start, last.getDate(METER_VALUES_DATE));
+	}
+	if (first == null || last == null || first.equals(last) || start.after(end)
+		|| first.getDate(METER_VALUES_DATE).after(last.getDate(METER_VALUES_DATE))) {
 	    ErrorHandle.popUp(this + ": There is not enough Data in this interval");
 	    throw new InvalidAlgorithmParameterException("Nicht genug Zählerstände für " + this.toString());
 	}
@@ -166,6 +171,8 @@ public class Meter implements DbNames, Comparable<Meter>, LoadAble {
 
 	double consumption = endValue - startValue;
 	// calculates the actual consumption in the give period of time
+	if (consumption < 0)
+	    throw new InvalidAlgorithmParameterException("Verbrauch < 0 in " + this);
 	return (consumption);
 
     }
@@ -271,9 +278,11 @@ public class Meter implements DbNames, Comparable<Meter>, LoadAble {
      * @param date
      * @param exclude
      *            optional parameter for excluding specific dates
-     * @return the Row containing the last meter value before the given date
-     *         <b>or the first after the date</b> if no match was found (up to 3
-     *         month)
+     * @param before
+     *            states if the closes value is prefered to be before or after this
+     *            date
+     * @return the Row containing the last meter value before the given date <b>or
+     *         the first after the date</b> if no match was found (up to 3 month)
      * @throws InvalidAlgorithmParameterException
      */
     private Row getClosestValue(Date date, Date exclude) throws InvalidAlgorithmParameterException {
@@ -286,22 +295,26 @@ public class Meter implements DbNames, Comparable<Meter>, LoadAble {
 	// 1 Month in milliseconds
 	long maxTime = 2592000000l;
 	Date latest = new Date(date.getTime() + maxTime);
+
 	// find last value before date
 	for (Row r : values) {
 	    anno = r.getDate(METER_VALUES_DATE);
-	    if ((anno.before(date) || anno.equals(date)
-		    || (last != null && Time.between(anno, date) < Time.between(last.getDate(METER_VALUES_DATE), date))
-		    || (last == null && anno.before(latest))) && !anno.equals(exclude)) {
-		if (last == null || anno.after(last.getDate(METER_VALUES_DATE)))
-		    last = r;
+	    if (!anno.equals(exclude)) {
+		if (anno.before(latest) || anno.equals(date)) {
+		    if (last == null) {
+			last = r;
+		    } else {
+			if (Time.between(anno, date) <= Time.between(last.getDate(METER_VALUES_DATE), date)) {
+			    last = r;
+			}
+		    }
+		}
 	    }
 	}
-
-	if (last == null) {
-	    System.out.println("No Date Found");
-	    throw new InvalidAlgorithmParameterException("No Date found");
-	}
-	return last;
+	if (last == null)
+	    return getClosestValue(date, null);
+	else
+	    return last;
     }
 
     private void list(Meter m) {
